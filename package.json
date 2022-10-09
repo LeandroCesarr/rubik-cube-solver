@@ -3,15 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "next dev $npm_package_config_nextpath",
+    "build": "next build $npm_package_config_nextpath",
+    "start": "next start $npm_package_config_nextpath",
+    "lint": "next lint $npm_package_config_nextpath"
   },
   "dependencies": {
     "next": "12.3.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
+  },
+  "config": {
+    "nextpath": "src/web"
   },
   "devDependencies": {
     "@types/node": "18.8.3",
