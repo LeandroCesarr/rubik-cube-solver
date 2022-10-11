@@ -60,6 +60,26 @@ const Home: NextPage = () => {
 
   return (
     <div className="flex items-center justify-center m-20">
+      <ul className='mr-10 text-2xl'>
+        <li>
+          0- Azul
+        </li>
+        <li>
+          1- Vermelho
+        </li>
+        <li>
+          2- Amarelo
+        </li>
+        <li>
+          3- Laranja
+        </li>
+        <li>
+          4- Verde
+        </li>
+        <li>
+          5- Branco
+        </li>
+      </ul>
       <table className="">
         <tbody>
           <tr>
@@ -99,11 +119,13 @@ const Home: NextPage = () => {
       <div className="flex flex-col ml-20">
         {Object.entries(MOVEMENT).map(([key, value]) => (
           <button
-            className="button p-2 m-2 bg-red-400 rounded"
+            className="button p-2 m-2 bg-red-400 rounded flex justify-between text-2xl"
             key={value}
             onClick={() => handleMove(value)}
           >
-            {key}
+            <span>{key}</span>
+            <span> - </span>
+            <span>{value}</span>
           </button>
         ))}
       </div>
