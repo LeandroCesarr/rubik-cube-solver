@@ -9,14 +9,18 @@ import {
 import { MOVEMENT } from './enums/Movement';
 
 export class Cube {
-  public readonly positions: Array<number[]>;
+  private _positions: Array<number[]>;
 
   constructor(positions?: Array<number[]>) {
-    this.positions =
-      positions ??
-      Array.from({ length: 6 }).map((_, idx) =>
-        Array.from({ length: 9 }).map((_, itemIdx) => itemIdx + 1 + 9 * idx)
-      );
+    this._positions = positions ?? Cube.GetDefaultPositions();
+  }
+
+  public get positions(): Array<number[]> {
+    return this._positions;
+  }
+
+  public reset(): void {
+    this._positions = Cube.GetDefaultPositions();
   }
 
   public move(movement: MOVEMENT): void {
@@ -97,7 +101,7 @@ export class Cube {
     const cloneState = this.createClone();
     const initialIndex = isUp ? 0 : 6;
 
-    this.positions.forEach((position, positionIndex) => {
+    this._positions.forEach((position, positionIndex) => {
       if (positionIndex != 2 && positionIndex != 5) {
         const targetFaceIndex = this.getRealHorizontalIndex(
           positionIndex,
@@ -122,7 +126,7 @@ export class Cube {
       ? VERTICAL_SIDE_BACK_POSITIONS_MAP
       : VERTICAL_SIDE_FRONT_POSITIONS_MAP;
 
-    this.positions.forEach((position, positionIndex) => {
+    this._positions.forEach((position, positionIndex) => {
       if (positionIndex != 0 && positionIndex != 4) {
         const targetFaceIndex = this.getRealVerticalIndex(
           false,
@@ -148,7 +152,7 @@ export class Cube {
     const cloneState = this.createClone();
     const initialIndex = movement == MOVEMENT.LEFT ? 0 : 2;
 
-    this.positions.forEach((position, positionIndex) => {
+    this._positions.forEach((position, positionIndex) => {
       if (positionIndex != 1 && positionIndex != 3) {
         const targetPosition =
           cloneState[this.getRealVerticalIndex(true, positionIndex, reverse)];
@@ -161,7 +165,7 @@ export class Cube {
   }
 
   private createClone(): Array<number[]> {
-    return this.positions.map((item) => [...item]);
+    return this._positions.map((item) => [...item]);
   }
 
   private getRealVerticalIndex(
@@ -197,7 +201,7 @@ export class Cube {
   }
 
   public toString(): string {
-    return this.positions
+    return this._positions
       .map(
         (face, idx) =>
           `Face #${idx} \n${face
@@ -220,5 +224,11 @@ export class Cube {
 
   private formatFace(number: Number): string {
     return number.toString().padStart(2, '0');
+  }
+
+  public static GetDefaultPositions(): Array<number[]> {
+    return Array.from({ length: 6 }).map((_, idx) =>
+      Array.from({ length: 9 }).map((_, itemIdx) => itemIdx + 1 + 9 * idx)
+    );
   }
 }

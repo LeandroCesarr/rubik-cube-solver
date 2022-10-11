@@ -58,6 +58,12 @@ const Home: NextPage = () => {
     setPositions([...cube.positions]);
   }
 
+  function handleReset(): void {
+    cube.reset();
+
+    setPositions([...cube.positions]);
+  }
+
   return (
     <div className="flex items-center justify-center m-20">
       <ul className='mr-10 text-2xl'>
@@ -128,6 +134,12 @@ const Home: NextPage = () => {
             <span>{value}</span>
           </button>
         ))}
+        <button
+            className="button p-2 m-2 bg-blue-500 rounded flex justify-between text-2xl"
+            onClick={handleReset}
+          >
+            Reset
+          </button>
       </div>
     </div>
   );
