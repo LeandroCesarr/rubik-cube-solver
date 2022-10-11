@@ -6,8 +6,11 @@ export enum MOVEMENT {
   LEFT_REVERSE = "L'",
   LEFT_DOUBLE = "L2",
   UP = "U",
+  UP_REVERSE = "U'",
   DOWN = "D",
+  DOWN_REVERSE = "D'",
   FRONT = "F",
   FRONT_REVERSE = "F'",
-  BACK = "B"
+  BACK = "B",
+  BACK_REVERSE = "B'"
 }

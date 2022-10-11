@@ -1,8 +1,10 @@
 import {
   COLORS,
-  VERTICAL_FRONT_FACE_MAP,
-  VERTICAL_SIDE_FACE_MAP,
-  VERTICAL_SIDE_MOVE_MAP,
+  HORIZONTALLY_FACE_TARGETS_MAP,
+  VERTICAL_FRONT_FACE_TARGETS_MAP,
+  VERTICAL_SIDE_BACK_POSITIONS_MAP,
+  VERTICAL_SIDE_FACE_TARGETS_MAP,
+  VERTICAL_SIDE_FRONT_POSITIONS_MAP,
 } from './constants';
 import { MOVEMENT } from './enums/Movement';
 
@@ -18,53 +20,119 @@ export class Cube {
   }
 
   public move(movement: MOVEMENT): void {
+    // R
     if (movement == MOVEMENT.RIGHT) {
       this.moveFrontVertically(MOVEMENT.RIGHT, false);
     }
 
+    // R'
     if (movement == MOVEMENT.RIGHT_REVERSE) {
       this.moveFrontVertically(MOVEMENT.RIGHT, true);
     }
 
+    // R2
     if (movement == MOVEMENT.RIGHT_DOUBLE) {
       this.moveFrontVertically(MOVEMENT.RIGHT, false);
       this.moveFrontVertically(MOVEMENT.RIGHT, false);
     }
 
+    // L
     if (movement == MOVEMENT.LEFT) {
       this.moveFrontVertically(MOVEMENT.LEFT, false);
     }
 
+    // L'
+    if (movement == MOVEMENT.LEFT_REVERSE) {
+      this.moveFrontVertically(MOVEMENT.LEFT, true);
+    }
+
+    // L2
+    if (movement == MOVEMENT.LEFT_DOUBLE) {
+      this.moveFrontVertically(MOVEMENT.LEFT, false);
+      this.moveFrontVertically(MOVEMENT.LEFT, false);
+    }
+
+    // U
+    if (movement == MOVEMENT.UP) {
+      this.moveHorizontally(true, false);
+    }
+
+    // U'
+    if (movement == MOVEMENT.UP_REVERSE) {
+      this.moveHorizontally(true, true);
+    }
+
+    // D
+    if (movement == MOVEMENT.DOWN) {
+      this.moveHorizontally(false, false);
+    }
+
+    // D'
+    if (movement == MOVEMENT.DOWN_REVERSE) {
+      this.moveHorizontally(false, true);
+    }
+
+    // F
     if (movement == MOVEMENT.FRONT) {
-      this.moveSideHorizontally(MOVEMENT.FRONT, false);
+      this.moveSideVertically(MOVEMENT.FRONT, false);
     }
 
+    // F'
     if (movement == MOVEMENT.FRONT_REVERSE) {
-      this.moveSideHorizontally(MOVEMENT.FRONT, true);
+      this.moveSideVertically(MOVEMENT.FRONT, true);
     }
 
+    // B
     if (movement == MOVEMENT.BACK) {
-      this.moveSideHorizontally(MOVEMENT.BACK, false);
+      this.moveSideVertically(MOVEMENT.BACK, false);
+    }
+
+    // B'
+    if (movement == MOVEMENT.BACK_REVERSE) {
+      this.moveSideVertically(MOVEMENT.BACK, true);
     }
   }
 
-  private moveSideHorizontally(
+  private moveHorizontally(isUp: boolean, reverse: boolean): void {
+    const cloneState = this.createClone();
+    const initialIndex = isUp ? 0 : 6;
+
+    this.positions.forEach((position, positionIndex) => {
+      if (positionIndex != 2 && positionIndex != 5) {
+        const targetFaceIndex = this.getRealHorizontalIndex(
+          positionIndex,
+          reverse
+        );
+        const targetPosition = cloneState[targetFaceIndex];
+
+        position[initialIndex] = targetPosition[initialIndex];
+        position[initialIndex + 1] = targetPosition[initialIndex + 1];
+        position[initialIndex + 2] = targetPosition[initialIndex + 2];
+      }
+    });
+  }
+
+  private moveSideVertically(
     movement: MOVEMENT.FRONT | MOVEMENT.BACK,
     reverse: boolean
   ): void {
     const cloneState = this.createClone();
+    const isBack = movement == MOVEMENT.BACK;
+    const positionsMap = isBack
+      ? VERTICAL_SIDE_BACK_POSITIONS_MAP
+      : VERTICAL_SIDE_FRONT_POSITIONS_MAP;
 
     this.positions.forEach((position, positionIndex) => {
       if (positionIndex != 0 && positionIndex != 4) {
-        const targetIndex = this.getRealVerticalIndex(
+        const targetFaceIndex = this.getRealVerticalIndex(
           false,
           positionIndex,
           reverse
         );
-        const targetPosition = cloneState[targetIndex];
 
-        const targetMap = VERTICAL_SIDE_MOVE_MAP[positionIndex];
-        const sourceMap = VERTICAL_SIDE_MOVE_MAP[targetIndex];
+        const targetPosition = cloneState[targetFaceIndex];
+        const targetMap = positionsMap[positionIndex];
+        const sourceMap = positionsMap[targetFaceIndex];
 
         position[targetMap[0]] = targetPosition[sourceMap[0]];
         position[targetMap[1]] = targetPosition[sourceMap[1]];
@@ -101,7 +169,22 @@ export class Cube {
     number: number,
     reverse: boolean
   ): number {
-    const source = isFront ? VERTICAL_FRONT_FACE_MAP : VERTICAL_SIDE_FACE_MAP;
+    const source = isFront
+      ? VERTICAL_FRONT_FACE_TARGETS_MAP
+      : VERTICAL_SIDE_FACE_TARGETS_MAP;
+
+    if (reverse) {
+      return Number.parseInt(
+        Object.entries(source).find(([key, value]) => value == number)?.[0] ??
+          '0'
+      );
+    }
+
+    return source[number];
+  }
+
+  private getRealHorizontalIndex(number: number, reverse: boolean): number {
+    const source = HORIZONTALLY_FACE_TARGETS_MAP;
 
     if (reverse) {
       return Number.parseInt(
@@ -129,13 +212,13 @@ export class Cube {
       .join('\n\n\n');
   }
 
-  private formatFace(number: Number): string {
-    return number.toString().padStart(2, '0');
-  }
-
   private convertToColorName(number: number): string {
     const index = Math.ceil(number / 9);
 
     return COLORS?.[index - 1] ?? 'Inválido';
+  }
+
+  private formatFace(number: Number): string {
+    return number.toString().padStart(2, '0');
   }
 }
