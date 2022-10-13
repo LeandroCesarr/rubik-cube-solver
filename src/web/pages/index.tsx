@@ -64,8 +64,14 @@ const Home: NextPage = () => {
     setPositions([...cube.positions]);
   }
 
+  function handleShuffle(): void {
+    cube.shuffle();
+
+    setPositions([...cube.positions]);
+  }
+
   return (
-    <div className="flex items-center justify-center m-20">
+    <div className="flex items-center justify-center m-10">
       <ul className='mr-10 text-2xl'>
         <li>
           0- Azul
@@ -90,7 +96,7 @@ const Home: NextPage = () => {
         <tbody>
           <tr>
             <td className="w-[180px]" />
-            <td className="w-[180px]">
+            <td className="w-[180px] rotate-180">
               <Face line={chunkArrayInGroups(positions[0], 3)} />
             </td>
             <td className="w-[180px]" />
@@ -125,7 +131,7 @@ const Home: NextPage = () => {
       <div className="flex flex-col ml-20">
         {Object.entries(MOVEMENT).map(([key, value]) => (
           <button
-            className="button p-2 m-2 bg-red-400 rounded flex justify-between text-2xl"
+            className="button p-2 m-2 bg-red-400 rounded flex justify-between text-xl"
             key={value}
             onClick={() => handleMove(value)}
           >
@@ -135,10 +141,17 @@ const Home: NextPage = () => {
           </button>
         ))}
         <button
-            className="button p-2 m-2 bg-blue-500 rounded flex justify-between text-2xl"
+            className="button p-2 m-2 bg-blue-500 rounded flex justify-between text-xl"
             onClick={handleReset}
           >
             Reset
+          </button>
+
+          <button
+            className="button p-2 m-2 bg-blue-500 rounded flex justify-between text-xl"
+            onClick={handleShuffle}
+          >
+            Shuffle
           </button>
       </div>
     </div>

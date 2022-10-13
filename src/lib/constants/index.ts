@@ -9,6 +9,10 @@ export const COLORS = [
 
 type FACE_TARGETS_MAP = Record<string, number>;
 
+export const VERTICAL_FRONT_POSITION_TARGET_MAP : number[] = [
+  0, 3, 6
+]
+
 export const VERTICAL_FRONT_FACE_TARGETS_MAP: FACE_TARGETS_MAP = {
   0: 2,
   2: 4,
@@ -42,4 +46,16 @@ export const VERTICAL_SIDE_BACK_POSITIONS_MAP = {
   2: [0, 1, 2],
   3: [2, 5, 8],
   5: [6, 7, 8],
+}
+
+export const FACE_ROTATION_MAP = {
+  0: 2,
+  1: 5,
+  2: 8,
+  3: 1,
+  4: 4,
+  5: 7,
+  6: 0,
+  7: 3,
+  8: 6,
 }
