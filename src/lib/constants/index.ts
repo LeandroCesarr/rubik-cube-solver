@@ -9,6 +9,26 @@ export const COLORS = [
 
 type FACE_TARGETS_MAP = Record<string, number>;
 
+export const SIDE_FRONT_VERTICAL_FACE_POSITIONS = {
+  1: [2, 5, 8],
+  2: [6, 7, 8],
+  3: [0, 3, 6],
+  5: [0, 1, 2]
+};
+
+export const SIDE_BACK_VERTICAL_FACE_POSITIONS = {
+  1: [0, 3, 6],
+  2: [0, 1, 2],
+  3: [2, 5, 8],
+  5: [6, 7, 8]
+};
+
+
+export const SIDE_FRONT_FACES_TO_INVERTE = [
+  [1, 2],
+  [3, 5]
+];
+
 export const VERTICAL_FRONT_POSITION_TARGET_MAP : number[] = [
   0, 3, 6
 ]
@@ -32,20 +52,6 @@ export const HORIZONTALLY_FACE_TARGETS_MAP: FACE_TARGETS_MAP = {
   1: 4,
   3: 0,
   4: 3
-}
-
-export const VERTICAL_SIDE_FRONT_POSITIONS_MAP = {
-  1: [2, 5, 8],
-  2: [6, 7, 8],
-  3: [0, 3, 6],
-  5: [0, 1, 2],
-}
-
-export const VERTICAL_SIDE_BACK_POSITIONS_MAP = {
-  1: [0, 3, 6],
-  2: [0, 1, 2],
-  3: [2, 5, 8],
-  5: [6, 7, 8],
 }
 
 export const FACE_ROTATION_MAP = {

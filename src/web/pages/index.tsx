@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Cube } from '../../lib/Cube';
 import { MOVEMENT } from '../../lib/enums/Movement';
 import { chunkArrayInGroups } from '../../helpers/chunkArrayInGroups';
@@ -50,25 +50,29 @@ const Face: FC<IFaceProps> = ({ line }): JSX.Element => {
 };
 
 const Home: NextPage = () => {
-  const [positions, setPositions] = useState(cube.positions);
+  const [positions, setPositions] = useState(cube.faces);
 
   function handleMove(move: MOVEMENT): void {
     cube.move(move);
 
-    setPositions([...cube.positions]);
+    setPositions([...cube.faces]);
   }
 
   function handleReset(): void {
     cube.reset();
 
-    setPositions([...cube.positions]);
+    setPositions([...cube.faces]);
   }
 
   function handleShuffle(): void {
     cube.shuffle();
 
-    setPositions([...cube.positions]);
+    setPositions([...cube.faces]);
   }
+
+  useEffect(() => {
+    window.Cube = Cube;
+  }, [])
 
   return (
     <div className="flex items-center justify-center m-10">
