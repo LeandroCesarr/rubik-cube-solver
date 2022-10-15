@@ -6,7 +6,10 @@
     "dev": "next dev $npm_package_config_nextpath",
     "build": "next build $npm_package_config_nextpath",
     "start": "next start $npm_package_config_nextpath",
-    "lint": "next lint $npm_package_config_nextpath"
+    "lint": "next lint $npm_package_config_nextpath",
+    "test": "vitest",
+    "test-ui": "vitest --ui",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "next": "12.3.1",
@@ -20,11 +23,14 @@
     "@types/node": "18.8.3",
     "@types/react": "18.0.21",
     "@types/react-dom": "18.0.6",
+    "@vitest/coverage-c8": "^0.24.3",
+    "@vitest/ui": "^0.24.2",
     "autoprefixer": "^10.4.12",
     "eslint": "8.25.0",
     "eslint-config-next": "12.3.1",
     "postcss": "^8.4.17",
     "tailwindcss": "^3.1.8",
-    "typescript": "4.8.4"
+    "typescript": "4.8.4",
+    "vitest": "^0.24.1"
   }
 }
