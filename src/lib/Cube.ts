@@ -36,7 +36,7 @@ export class Cube {
     this._faces = Cube.GetDefaultState();
   }
 
-  public shuffle(count?: number): void {
+  public shuffle(count?: number): MOVEMENT[] {
     const flattedMovements = Object.values(MOVEMENT);
     const movementsCount = flattedMovements.length - 1;
 
@@ -48,9 +48,9 @@ export class Cube {
     // Remover movimentos parentes seguidos
     // Remover duplicados seguidos
 
-    console.log(movements);
-
     movements.forEach((movement) => this.move(movement));
+
+    return movements;
   }
 
   public move(movement: MOVEMENT): void {
