@@ -1,4 +1,4 @@
-import { MOVEMENT } from '../../../src/lib/enums/Movement';
+import { MOVEMENT } from '@/lib/enums/Movement';
 
 export const movements = [
   {

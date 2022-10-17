@@ -8,8 +8,8 @@ import {
   VERTICAL_FRONT_FACE_TARGETS_MAP,
   VERTICAL_FRONT_POSITION_TARGET_MAP,
   VERTICAL_SIDE_FACE_TARGETS_MAP,
-} from './constants';
-import { MOVEMENT } from './enums/Movement';
+} from '@/lib/constants';
+import { MOVEMENT } from '@/lib/enums/Movement';
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -189,7 +189,7 @@ export class Cube {
 
     sourceFacePositionsIndex.forEach((facePositionIndex, idx) => {
       const hasInverte = SIDE_FRONT_FACES_TO_INVERTE.some(group =>
-        group.every(item => ((item === targetFaceIndex) || (item ==faceIndex) ))
+        group.every(item => ((item === targetFaceIndex) || (item == faceIndex) ))
       );
 
       if (hasInverte) {

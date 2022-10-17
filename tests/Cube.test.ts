@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
-import { COLORS } from '../src/lib/constants'
-import { Cube } from '../src/lib/Cube'
-import { MOVEMENT } from '../src/lib/enums/Movement'
+import { COLORS } from '@/lib/constants'
+import { Cube } from '@/lib/Cube'
+import { MOVEMENT } from '@/lib/enums/Movement'
 import { defaultState } from './data/cube/defaultState'
 import { movements } from './data/cube/movements'
 

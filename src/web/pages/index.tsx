@@ -1,8 +1,8 @@
 import type { NextPage } from 'next';
 import { FC, useEffect, useState } from 'react';
-import { Cube } from '../../lib/Cube';
-import { MOVEMENT } from '../../lib/enums/Movement';
-import { chunkArrayInGroups } from '../../helpers/chunkArrayInGroups';
+import { Cube } from '@/lib/Cube';
+import { MOVEMENT } from '@/lib/enums/Movement';
+import { chunkArrayInGroups } from '@/helpers/chunkArrayInGroups';
 
 interface IFaceProps {
   line: Array<number[]>;
