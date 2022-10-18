@@ -28,14 +28,26 @@ export class Cube {
     this._faces = positions ?? Cube.GetDefaultState();
   }
 
+  /**
+   * Faces state
+   * @readonly
+   */
   public get faces(): Array<number[]> {
     return this._faces;
   }
 
+  /**
+   * Reset cube state
+   */
   public reset(): void {
     this._faces = Cube.GetDefaultState();
   }
 
+  /**
+   * Shuffle the cube
+   * @param count number of movements to shuffle
+   * @returns
+   */
   public shuffle(count?: number): MOVEMENT[] {
     const flattedMovements = Object.values(MOVEMENT);
     const movementsCount = flattedMovements.length - 1;
@@ -53,6 +65,10 @@ export class Cube {
     return movements;
   }
 
+  /**
+   * Do movement
+   * @param movement
+   */
   public move(movement: MOVEMENT): void {
     // R
     if (movement == MOVEMENT.RIGHT) {
@@ -127,8 +143,13 @@ export class Cube {
     }
   }
 
+  /**
+   * Do horizontally movement
+   * @param isUp
+   * @param reverse
+   */
   private moveHorizontally(isUp: boolean, reverse: boolean): void {
-    const cloneState = this.createClone();
+    const cloneState = this.createFacesClone();
     const initialIndex = isUp ? 0 : 6;
 
     this._faces.forEach((position, positionIndex) => {
@@ -154,11 +175,16 @@ export class Cube {
     }
   }
 
+  /**
+   * Do side vertically movement
+   * @param movement
+   * @param reverse
+   */
   private moveSideVertically(
     movement: MOVEMENT.FRONT | MOVEMENT.BACK,
     reverse: boolean
   ): void {
-    const stateClone = this.createClone();
+    const stateClone = this.createFacesClone();
     const isFront = movement === MOVEMENT.FRONT;
     const facesToChange = getFacesByMap(SIDE_FRONT_VERTICAL_FACE_POSITIONS);
 
@@ -182,6 +208,13 @@ export class Cube {
     }
   }
 
+  /**
+   * Move side vertically face
+   * @param faceIndex
+   * @param targetFaceIndex
+   * @param faceStateClone
+   * @param facePositionsMap
+   */
   private moveFaceVertically(faceIndex: number, targetFaceIndex: number, faceStateClone: number[], facePositionsMap: Record<number, number[]>): void {
     const sourceFacePositionsIndex = [...facePositionsMap[faceIndex.toString()]];
     const targetFacePositionsIndex = [...facePositionsMap[targetFaceIndex.toString()]];
@@ -200,11 +233,16 @@ export class Cube {
     });
   }
 
+  /**
+   * Do front vertically movement
+   * @param movement
+   * @param reverse
+   */
   private moveFrontVertically(
     movement: MOVEMENT.LEFT | MOVEMENT.RIGHT,
     reverse: boolean
   ): void {
-    const cloneState = this.createClone();
+    const cloneState = this.createFacesClone();
     const isLeft = movement == MOVEMENT.LEFT;
     const initialIndex = isLeft ? 0 : 2;
 
@@ -250,10 +288,11 @@ export class Cube {
     }
   }
 
-  private createClone(): Array<number[]> {
-    return JSON.parse(JSON.stringify(this._faces));
-  }
-
+  /**
+   * Get vertical target face by face index
+   * @param faceIndex
+   * @param reverse
+   */
   private getRealVerticalTargetFaceIndex(
     isFront: boolean,
     number: number,
@@ -273,21 +312,31 @@ export class Cube {
     return source[number.toString()];
   }
 
-  private getRealHorizontalIndex(number: number, reverse: boolean): number {
+  /**
+   * Get horizontal target face by face index
+   * @param faceIndex
+   * @param reverse
+   */
+  private getRealHorizontalIndex(faceIndex: number, reverse: boolean): number {
     const source = HORIZONTALLY_FACE_TARGETS_MAP;
 
     if (reverse) {
       return Number.parseInt(
-        Object.entries(source).find(([key, value]) => value == number)?.[0] ??
+        Object.entries(source).find(([key, value]) => value == faceIndex)?.[0] ??
           '0'
       );
     }
 
-    return source[number];
+    return source[faceIndex];
   }
 
+  /**
+   * Rotate the face clockwise
+   * @param faceIndex
+   * @param reverse reverse the direction
+   */
   private rotateFacePositions(faceIndex: number, reverse: boolean): void {
-    const clonedFace = [...this._faces[faceIndex]];
+    const clonedFace = this.createFaceClone(faceIndex);
 
     Object.entries(FACE_ROTATION_MAP).forEach((map) => {
       if (reverse) {
@@ -298,6 +347,27 @@ export class Cube {
     });
   }
 
+  /**
+   * Returns a face clone
+   * @param faceIndex
+   * @returns cloned face
+   */
+   private createFaceClone(faceIndex: number): number[] {
+    return JSON.parse(JSON.stringify(this._faces[faceIndex]));
+  }
+
+  /**
+   * Returns a faces clone
+   * @returns cloned state
+   */
+  private createFacesClone(): Array<number[]> {
+    return JSON.parse(JSON.stringify(this._faces));
+  }
+
+  /**
+   * Returns the summary of faces in string
+   * @returns
+   */
   public toString(): string {
     return this._faces
       .map(
@@ -314,16 +384,29 @@ export class Cube {
       .join('\n\n\n');
   }
 
+  /**
+   * Convert face number to its respective color
+   * @param number
+   * @returns
+   */
   private convertToColorName(number: number): string {
     const index = Math.ceil(number / 9);
 
     return COLORS?.[index - 1] ?? 'Inválido';
   }
 
-  private formatFace(number: Number): string {
-    return number.toString().padStart(2, '0');
+  /**
+   * Format face number to always have two characters
+   * @param faceNumber
+   * @returns formatted face number
+   */
+  private formatFace(faceNumber: Number): string {
+    return faceNumber.toString().padStart(2, '0');
   }
 
+  /**
+   * Returns cube default state
+   */
   public static GetDefaultState(): Array<number[]> {
     return Array.from({ length: 6 }).map((_, idx) =>
       Array.from({ length: 9 }).map((_, itemIdx) => itemIdx + 1 + 9 * idx)

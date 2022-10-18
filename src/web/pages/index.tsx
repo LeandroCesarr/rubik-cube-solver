@@ -70,10 +70,6 @@ const Home: NextPage = () => {
     setPositions([...cube.faces]);
   }
 
-  useEffect(() => {
-    window.Cube = Cube;
-  }, [])
-
   return (
     <div className="flex items-center justify-center m-10">
       <ul className='mr-10 text-2xl'>
