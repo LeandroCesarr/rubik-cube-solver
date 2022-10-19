@@ -32,6 +32,27 @@ describe('Cube', () => {
     expect(cube.faces).toStrictEqual(defaultState);
   })
 
+  it('should isSolved property must return true', () => {
+    // Arrange
+    const { cube } = makeSTU();
+
+    // Act
+
+    // Assert
+    expect(cube.isSolved).toBeTruthy();
+  })
+
+  it('should isSolved property must return false', () => {
+    // Arrange
+    const { cube } = makeSTU();
+
+    // Act
+    cube.shuffle();
+
+    // Assert
+    expect(cube.isSolved).toBeFalsy();
+  })
+
   it('should shuffle correctly', () => {
     // Arrange
     const shuffleCount = 2;
@@ -80,5 +101,13 @@ describe.each(Object.entries(movements))('Cube movements', (_, { moves, state })
       expect(face).toHaveLength(9);
       expect(face, `Face ${COLORS[idx]} - #${idx}`).toStrictEqual(state[idx])
     })
+
+    expect(
+      cube.faces
+        .flat()
+        .some((position, index, positions) =>
+          positions.indexOf(position) !== index
+        )
+    ).toBeFalsy();
   })
 })

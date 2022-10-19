@@ -36,6 +36,16 @@ export class Cube {
     return this._faces;
   }
 
+  public get isSolved(): boolean {
+    const defaultState = Cube.GetDefaultState();
+
+    return this._faces.every((face, faceIndex) =>
+      face.every((position, positionIndex) =>
+        this._faces[faceIndex][positionIndex] === defaultState[faceIndex][positionIndex]
+      )
+    )
+  }
+
   /**
    * Reset cube state
    */
