@@ -1,12 +1,7 @@
 import type { NextPage } from 'next';
-import { FC, useEffect, useState } from 'react';
+import { ButtonHTMLAttributes, FC, Fragment, useEffect, useState } from 'react';
 import { Cube } from '@/lib/Cube';
 import { MOVEMENT } from '@/lib/enums/Movement';
-import { chunkArrayInGroups } from '@/helpers/chunkArrayInGroups';
-
-interface IFaceProps {
-  line: Array<number[]>;
-}
 
 const cube = new Cube();
 
@@ -16,45 +11,82 @@ const COLORS = [
   'bg-amber-300',
   'bg-orange-500',
   'bg-lime-700',
+  'bg-white',
 ];
+
+const FACES_TO_ROTATE = {
+  0: 'rotate-180',
+  1: 'rotate-90',
+  3: '-rotate-90',
+};
 
 function getBackground(number: number): string {
   const index = Math.ceil(number / 9);
-
   return COLORS?.[index - 1] ?? '';
 }
 
-const Face: FC<IFaceProps> = ({ line }): JSX.Element => {
+interface IActionButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {}
+
+const ActionButton: FC<IActionButtonProps> = ({
+  children,
+  ...props
+}): JSX.Element => {
   return (
-    <table className="w-full">
-      <tbody>
-        {line.map((line, idx) => (
-          <tr key={`line-${idx}`}>
-            <td className="flex border-collapse border-black">
-              {line.map((position) => (
-                <div
-                  className={`w-full h-[60px] flex items-center justify-center border border-black ${getBackground(
-                    position
-                  )}`}
-                  key={position}
-                >
-                  {position}
-                </div>
-              ))}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <button {...props} className="bg-red_pink hover:bg-red_dark p-1 rounded">
+      {children}
+    </button>
   );
 };
 
+interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {}
+
+const MoveButton: FC<IButtonProps> = ({ children, ...props }): JSX.Element => {
+  return (
+    <button
+      {...props}
+      className="bg-red_pink hover:bg-red_dark p-1 rounded w-[2em]"
+    >
+      {children}
+    </button>
+  );
+};
+
+const Face: FC<{ face: number[]; faceIndex: number }> = ({
+  face,
+  faceIndex,
+}): JSX.Element => {
+  return (
+    <div className={`grid grid-cols-3 ${FACES_TO_ROTATE?.[faceIndex]}`}>
+      {face.map((position, positionIndex) => (
+        <Position key={positionIndex} position={position} />
+      ))}
+    </div>
+  );
+};
+
+const Position: FC<{ position: number }> = ({ position }): JSX.Element => {
+  return (
+    <div
+      className={` relative text-center  pt-[100%] ${getBackground(
+        position
+      )} transition-colors ease-out`}
+    >
+      <span className="absolute inset-0 flex items-center justify-center text-dark">
+        {position.toString().padStart(2, '0')}
+      </span>
+    </div>
+  );
+};
+
+const INDEXES_TO_INJECT_EMPTY = [0, 4, 5];
+
 const Home: NextPage = () => {
   const [positions, setPositions] = useState(cube.faces);
+  const [moves, setMoves] = useState<string[]>([]);
 
   function handleMove(move: MOVEMENT): void {
     cube.move(move);
-
+    setMoves((old) => [...old, move]);
     setPositions([...cube.faces]);
   }
 
@@ -62,97 +94,57 @@ const Home: NextPage = () => {
     cube.reset();
 
     setPositions([...cube.faces]);
+    setMoves([]);
   }
 
   function handleShuffle(): void {
-    cube.shuffle();
+    const moves = cube.shuffle();
 
+    setMoves(moves);
     setPositions([...cube.faces]);
   }
 
   return (
-    <div className="flex items-center justify-center m-10">
-      <ul className='mr-10 text-2xl'>
-        <li>
-          0- Azul
-        </li>
-        <li>
-          1- Vermelho
-        </li>
-        <li>
-          2- Amarelo
-        </li>
-        <li>
-          3- Laranja
-        </li>
-        <li>
-          4- Verde
-        </li>
-        <li>
-          5- Branco
-        </li>
-      </ul>
-      <table className="">
-        <tbody>
-          <tr>
-            <td className="w-[180px]" />
-            <td className="w-[180px] rotate-180">
-              <Face line={chunkArrayInGroups(positions[0], 3)} />
-            </td>
-            <td className="w-[180px]" />
-          </tr>
-          <tr>
-            <td className="w-[180px] rotate-90">
-              <Face line={chunkArrayInGroups(positions[1], 3)} />
-            </td>
-            <td className="w-[180px]">
-              <Face line={chunkArrayInGroups(positions[2], 3)} />
-            </td>
-            <td className="w-[180px] -rotate-90">
-              <Face line={chunkArrayInGroups(positions[3], 3)} />
-            </td>
-          </tr>
-          <tr>
-            <td className="w-[180px]" />
-            <td className="w-[180px]">
-              <Face line={chunkArrayInGroups(positions[4], 3)} />
-            </td>
-            <td className="w-[180px]" />
-          </tr>
-          <tr>
-            <td className="w-[180px]" />
-            <td className="w-[180px]">
-              <Face line={chunkArrayInGroups(positions[5], 3)} />
-            </td>
-            <td className="w-[180px]" />
-          </tr>
-        </tbody>
-      </table>
-      <div className="flex flex-col ml-20">
-        {Object.entries(MOVEMENT).map(([key, value]) => (
-          <button
-            className="button p-2 m-2 bg-red-400 rounded flex justify-between text-xl"
-            key={value}
-            onClick={() => handleMove(value)}
-          >
-            <span>{key}</span>
-            <span> - </span>
-            <span>{value}</span>
-          </button>
-        ))}
-        <button
-            className="button p-2 m-2 bg-blue-500 rounded flex justify-between text-xl"
-            onClick={handleReset}
-          >
-            Reset
-          </button>
-
-          <button
-            className="button p-2 m-2 bg-blue-500 rounded flex justify-between text-xl"
-            onClick={handleShuffle}
-          >
-            Shuffle
-          </button>
+    <div className="container mx-auto py-8 px-4">
+      <h1 className="text-5xl">Wall-C</h1>
+      <p>Rubik`s cube solver</p>
+      <div className="space-y-8 mt-10">
+        <div className="">
+          <h2>Moves</h2>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {Object.entries(MOVEMENT).map(([key, value]) => (
+              <MoveButton key={value} onClick={() => handleMove(value)}>
+                <span>{value}</span>
+              </MoveButton>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h2>Actions</h2>
+          <div className="flex flex-wrap space-x-2 mt-2">
+            <ActionButton onClick={handleReset}>Reset</ActionButton>
+            <ActionButton onClick={handleShuffle}>Shuffle</ActionButton>
+          </div>
+        </div>
+        <div>
+          <h2>Current moves</h2>
+          <p className="my-2 leading-none italic min-h-[1em]">
+            {moves.join(', ')}
+          </p>
+        </div>
+        <div className="flex items-center justify-center">
+          <div className="holder w-[400px]">
+            <div className="cube w-full grid grid-cols-3">
+              {positions.map((face, faceIndex) => (
+                <Fragment key={faceIndex}>
+                  {INDEXES_TO_INJECT_EMPTY.includes(faceIndex) && <div />}
+                  <Face face={face} faceIndex={faceIndex} />
+                  {INDEXES_TO_INJECT_EMPTY.includes(faceIndex) && <div />}
+                </Fragment>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
