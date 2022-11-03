@@ -1,9 +1,8 @@
 import type { NextPage } from 'next';
-import { ButtonHTMLAttributes, FC, Fragment, useEffect, useState } from 'react';
+import { ButtonHTMLAttributes, FC, FormEvent, Fragment, useEffect, useRef, useState } from 'react';
 import { Cube } from '@/lib/Cube';
 import { MOVEMENT } from '@/lib/enums/Movement';
-
-const cube = new Cube();
+import { LayerSolver } from '@/lib/LayerSolver';
 
 const COLORS = [
   'bg-cyan-700',
@@ -80,20 +79,75 @@ const Position: FC<{ position: number }> = ({ position }): JSX.Element => {
 
 const INDEXES_TO_INJECT_EMPTY = [0, 4, 5];
 
+function useCube(): Cube {
+  const cubeRef = useRef<Cube>();
+
+  if (!cubeRef.current) {
+      cubeRef.current = new Cube();
+  }
+  return cubeRef.current;
+}
+
+function useSolver(cube: Cube): LayerSolver {
+  const solverRef = useRef<LayerSolver>();
+
+  if (!solverRef.current) {
+    solverRef.current = new LayerSolver(cube);
+  }
+  return solverRef.current;
+}
+
+function useAnimateSolve(cube: Cube): { animate: (moves: MOVEMENT[]) => void } {
+  const [moves, setMoves] = useState([])
+
+  function animate(moves: MOVEMENT[]): void {
+    setMoves(moves);
+  }
+
+  useEffect(() => {
+
+    if (moves.length) {
+      console.log("caiu aqui");
+      const id = setTimeout(() => {
+        setMoves(old => {
+          cube.move(old[old.length - 1]);
+          return [...old.slice(0, old.length - 2)]
+        })
+      }, 1000)
+
+      return () => clearTimeout(id);
+    }
+  }, [moves])
+
+  return {
+    animate,
+  }
+}
+
 const Home: NextPage = () => {
-  const [positions, setPositions] = useState(cube.faces);
+  const cube = useCube();
+  const solver = useSolver(cube);
   const [moves, setMoves] = useState<string[]>([]);
+  const [sequence, setSequence] = useState<string>("");
+  const { animate } = useAnimateSolve(cube);
+
+  function onSubmit(evt: FormEvent): void {
+    evt.preventDefault();
+
+    const moves = sequence.replaceAll("'", "").replace(/^, /g, ",").split(",").map((item) => item.trim()) as MOVEMENT[];
+
+    cube.moveMany(moves)
+    setMoves(moves);
+  }
 
   function handleMove(move: MOVEMENT): void {
     cube.move(move);
     setMoves((old) => [...old, move]);
-    setPositions([...cube.faces]);
   }
 
   function handleReset(): void {
     cube.reset();
 
-    setPositions([...cube.faces]);
     setMoves([]);
   }
 
@@ -101,7 +155,6 @@ const Home: NextPage = () => {
     const moves = cube.shuffle();
 
     setMoves(moves);
-    setPositions([...cube.faces]);
   }
 
   return (
@@ -119,11 +172,19 @@ const Home: NextPage = () => {
             ))}
           </div>
         </div>
+        <div className="">
+          <h2>Input sequence</h2>
+          <form onSubmit={onSubmit} className="flex flex-wrap gap-2 mt-2">
+            <input type="text" className='text-black' onChange={(evt) => setSequence(evt.target.value)} />
+            <ActionButton onClick={handleReset}>Submit</ActionButton>
+          </form>
+        </div>
         <div>
           <h2>Actions</h2>
           <div className="flex flex-wrap space-x-2 mt-2">
             <ActionButton onClick={handleReset}>Reset</ActionButton>
             <ActionButton onClick={handleShuffle}>Shuffle</ActionButton>
+            <ActionButton onClick={() => animate([MOVEMENT.BACK, MOVEMENT.FRONT, MOVEMENT.RIGHT_DOUBLE])}>Solve</ActionButton>
           </div>
         </div>
         <div>
@@ -135,7 +196,7 @@ const Home: NextPage = () => {
         <div className="flex items-center justify-center">
           <div className="holder w-[400px]">
             <div className="cube w-full grid grid-cols-3">
-              {positions.map((face, faceIndex) => (
+              {cube.faces.map((face, faceIndex) => (
                 <Fragment key={faceIndex}>
                   {INDEXES_TO_INJECT_EMPTY.includes(faceIndex) && <div />}
                   <Face face={face} faceIndex={faceIndex} />
