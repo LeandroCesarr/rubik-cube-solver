@@ -8,7 +8,8 @@
     "start": "next start $npm_package_config_nextpath",
     "lint": "next lint $npm_package_config_nextpath",
     "test": "vitest",
-    "test-ui": "vitest --ui",
+    "test:bench": "vitest bench",
+    "test:ui": "vitest --ui",
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
