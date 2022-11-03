@@ -76,6 +76,23 @@ export class Cube {
   }
 
   /**
+   * Do many movements
+   * @param moves
+   */
+  public moveMany(moves: MOVEMENT[]): void {
+    moves.forEach((move) => this.move(move));
+  }
+
+  /**
+   * Do many movements
+   * @param moves
+   */
+   public moveSameMany(move: MOVEMENT, count: number): void {
+    Array.from({ length: count })
+      .forEach(_ => this.move(move));
+  }
+
+  /**
    * Do movement
    * @param movement
    */
