@@ -1,6 +1,7 @@
 import { Cube } from '@/lib/Cube';
 import { LayerSolver } from '@/lib/LayerSolver';
-import { bench, describe } from 'vitest';
+import { bench, describe, expect } from 'vitest';
+import { defaultState } from './data/cube/defaultState';
 
 const makeSUT = () => {
   const cube = new Cube();
@@ -18,9 +19,14 @@ const makeSUT = () => {
 describe('LayerSolver', () => {
   bench('White cross solution', async () => {
 
-    const { solver } = makeSUT();
+    const { solver, cube } = makeSUT();
 
     await solver.solve();
+
+    expect(cube.faces[5][1]).toBe(defaultState[5][1]);
+    expect(cube.faces[5][3]).toBe(defaultState[5][3]);
+    expect(cube.faces[5][5]).toBe(defaultState[5][5]);
+    expect(cube.faces[5][7]).toBe(defaultState[5][7]);
 
   }, { iterations: 500 });
 });
