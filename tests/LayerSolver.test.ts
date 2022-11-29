@@ -1,4 +1,5 @@
 import { Cube } from '@/lib/Cube';
+import { MOVEMENT } from '@/lib/enums/Movement';
 import { LayerSolver } from '@/lib/LayerSolver';
 import { describe, expect, it } from 'vitest';
 import { defaultState } from './data/cube/defaultState';
@@ -12,10 +13,12 @@ const state = [
   [54, 53, 3, 22, 50, 38, 18, 15, 9],
 ];
 
-const makeSUT = () => {
-  const cube = new Cube();
+const makeSUT = (shuffle: boolean = true, positions?: Array<number[]>) => {
+  const cube = new Cube(positions);
 
-  cube.shuffle();
+  if (shuffle) {
+    cube.shuffle();
+  }
 
   const solver = new LayerSolver(cube);
 
@@ -53,7 +56,7 @@ describe('LayerSolver', () => {
 
   it('Should returns how to solve cube', async () => {
     // Arrange
-    const { solver, cube } = makeSUT();
+    const { solver, cube } = makeSUT(false, state);
 
     // Act
     expect(cube.faces).toStrictEqual(state);
@@ -61,8 +64,6 @@ describe('LayerSolver', () => {
     const solve = await solver.getSolve();
 
     cube.moveMany(solve);
-
-    console.log({ solve });
 
     // Assert
     expect(cube.isSolved).toBeTruthy();

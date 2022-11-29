@@ -28,5 +28,16 @@ describe('LayerSolver', () => {
     expect(cube.faces[5][5]).toBe(defaultState[5][5]);
     expect(cube.faces[5][7]).toBe(defaultState[5][7]);
 
-  }, { iterations: 500 });
+  }, { iterations: 1000 });
+
+  bench('First layer soluton', async () => {
+    // Arrange
+    const { solver, cube } = makeSUT();
+
+    // Act
+    await solver.solve();
+
+    // Assert
+    expect(solver.isBottomLayerSolved).toBeTruthy();
+  }, { iterations: 1000 });
 });
