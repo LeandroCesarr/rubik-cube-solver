@@ -176,3 +176,5 @@ export const FACE_MOVEMENTS_MAP: Record<number, IFaceMovementMap> = {
 
 export const MAX_WHITE_CROSS_TRIES_COUNT = 5;
 export const MAX_WHITE_FOREHEAD_TRIES_COUNT = 5;
+export const MAX_WHITE_CORNER_TRIES_COUNT = 5;
+export const MAX_WHITE_CORNERS_TRIES_COUNT = 5;

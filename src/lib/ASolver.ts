@@ -1,6 +1,7 @@
 import { Cube } from '@/lib/Cube';
 
 const HORIZONTAL_FACE_SEQUENCE = [0, 1, 4, 3];
+const FACE_CORNER_SEQUENCE = [0, 2, 8, 6];
 
 const FOREHEADS_MAP = {
   2: 20,
@@ -23,6 +24,55 @@ export interface IPositionLocation {
   face: number;
   position: number;
 }
+
+export interface ICornerMap {
+  top: [number, number];
+  left: [number, number];
+  right: [number, number];
+}
+
+const CORNERS_MAP: ICornerMap[] = [
+  {
+    top: [2, 0],
+    left: [0, 2],
+    right: [1, 0]
+  },
+  {
+    top: [2, 6],
+    left: [1, 2],
+    right: [4, 0]
+  },
+  {
+    top: [2, 8],
+    left: [4, 2],
+    right: [3, 0]
+  },
+  {
+    top: [2, 2],
+    left: [3, 2],
+    right:[ 0, 0]
+  },
+  {
+    top: [5, 0],
+    right: [4, 6],
+    left: [1, 8]
+  },
+  {
+    top: [5, 6],
+    right: [1, 6],
+    left:[0, 6]
+  },
+  {
+    top: [5, 8],
+    right: [0, 8],
+    left: [3, 8]
+  },
+  {
+    top: [5, 2],
+    right: [3, 6],
+    left: [4, 8]
+  },
+]
 
 export abstract class ASolver {
   protected cube: Cube;
@@ -66,11 +116,42 @@ export abstract class ASolver {
     const targetSequenceIndex = HORIZONTAL_FACE_SEQUENCE.indexOf(targetFaceIndex);
     const count = currentSequenceIndex - targetSequenceIndex;
 
+    // TODO: improve this, se mudar array vai dar ruim
     if (currentFaceIndex === 3 && targetFaceIndex === 0) {
       return -1;
     }
 
     if (currentFaceIndex === 0 && targetFaceIndex === 3) {
+      return 1;
+    }
+
+    return count;
+  }
+
+  /**
+   * Positivo -> esquerda
+   * @param currentFaceIndex
+   * @param targetFaceIndex
+   * @returns
+   */
+   protected geCornerTargetFaceMoveCount(currentPosition: number, targetPosition: number): number {
+    const currentSequenceIndex = FACE_CORNER_SEQUENCE.indexOf(currentPosition);
+    const targetSequenceIndex = FACE_CORNER_SEQUENCE.indexOf(targetPosition);
+    const count = currentSequenceIndex - targetSequenceIndex;
+    // const count2 =  targetSequenceIndex - currentSequenceIndex;
+    // const minus = Math.min(count, count2)
+
+    // console.log({
+    //   currentPosition, targetPosition, currentSequenceIndex, targetSequenceIndex
+    // });
+
+
+    // TODO: improve this, se mudar array vai dar ruim
+    if (currentPosition === 6 && targetPosition === 0) {
+      return -1;
+    }
+
+    if (currentPosition === 0 && targetPosition === 6) {
       return 1;
     }
 
@@ -158,5 +239,38 @@ export abstract class ASolver {
 
       return acc;
     }, [])
+  }
+
+  protected getCornersByFace(face: number): [number, number, number, number] {
+    const faceData = this.defaultState[face];
+
+    return [
+      faceData[0],
+      faceData[2],
+      faceData[6],
+      faceData[8]
+    ]
+  }
+
+  protected getCornerMapByValue(value: number): ICornerMap {
+    const coordinates = this.getPositionCoordinatesByValue(value);
+
+    return CORNERS_MAP.find((map) =>
+      Object
+        .values(map)
+        .map((values) => values.join())
+        .includes(coordinates.join())
+    );
+  }
+
+  protected getTargetCornerPosition(position: number) {
+    const map = {
+      0: 6,
+      2: 8,
+      6: 0,
+      8: 2
+    };
+
+    return map[position];
   }
 }
