@@ -336,6 +336,21 @@ export class LayerSolver extends ASolver {
       )
     }
 
+    if (
+      whiteFace === 2 &&
+      cornerDistances.left == -1 &&
+      cornerDistances.right == 1
+    ) {
+      const { horizontal, vertical } = FACE_MOVEMENTS_MAP[left[0]];
+
+      moves.push(
+        vertical.right.top,
+        horizontal.top.left,
+        horizontal.top.left,
+        vertical.right.bottom
+      );
+    }
+
     //// Finishes
 
     if (
@@ -364,25 +379,6 @@ export class LayerSolver extends ASolver {
         vertical.right.top,
         horizontal.top.left,
         vertical.right.bottom,
-      );
-    }
-
-    if (
-      whiteFace === 2 &&
-      cornerDistances.left == -1 &&
-      cornerDistances.right == 1
-    ) {
-      const { horizontal, vertical } = FACE_MOVEMENTS_MAP[left[0]];
-
-      moves.push(
-        vertical.right.top,
-        horizontal.top.left,
-        horizontal.top.left,
-        vertical.right.bottom,
-        horizontal.top.right,
-        vertical.right.top,
-        horizontal.top.left,
-        vertical.right.bottom
       );
     }
 
@@ -430,7 +426,7 @@ export class LayerSolver extends ASolver {
   }
 
   public async getSolve(): Promise<MOVEMENT[]> {
-    if (this.cube.isSolved) {
+    if (this.originalCube.isSolved) {
       throw new Error("Cube already solved");
     }
 
