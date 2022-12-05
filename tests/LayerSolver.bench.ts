@@ -30,7 +30,7 @@ describe('LayerSolver', () => {
 
   }, { iterations: 1000 });
 
-  bench('First layer soluton', async () => {
+  bench('First layer solution', async () => {
     // Arrange
     const { solver, cube } = makeSUT();
 
@@ -41,7 +41,7 @@ describe('LayerSolver', () => {
     expect(solver.isBottomLayerSolved).toBeTruthy();
   }, { iterations: 1000 });
 
-  bench('Second layer soluton', async () => {
+  bench('Second layer solution', async () => {
     // Arrange
     const { solver, cube } = makeSUT();
 
