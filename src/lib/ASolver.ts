@@ -273,4 +273,13 @@ export abstract class ASolver {
 
     return map[position];
   }
+
+  protected getMiddleForeheads(): [number, number, number, number] {
+    return [
+      this.defaultState[0][3],
+      this.defaultState[0][5],
+      this.defaultState[4][3],
+      this.defaultState[4][5],
+    ]
+  }
 }

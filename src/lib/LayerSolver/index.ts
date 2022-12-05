@@ -10,6 +10,8 @@ import {
   VERTICAL_ROTATIONS_MAP,
   MAX_WHITE_CORNERS_TRIES_COUNT,
   MAX_WHITE_CORNER_TRIES_COUNT,
+  POSITIONS_TO_SECOND_LAYER_CHECK,
+  MAX_MIDDLE_FOREHEAD_TRIES_COUNT,
 } from './constants';
 
 export class LayerSolver extends ASolver {
@@ -49,6 +51,30 @@ export class LayerSolver extends ASolver {
   }
 
   /**
+   * Returns if middle layer is solved
+   */
+   public get isMiddleLayerSolved(): boolean {
+    const defaultState = Cube.GetDefaultState();
+    const isWhiteFaceSolved = this.cube.faces[5]
+      .every((position, positionIndex) => defaultState[5][positionIndex] === position);
+
+    const isSidesSolved = this.cube.faces.every((face, faceIndex) => {
+      if (FACES_TO_FIRST_LAYER_IGNORE.includes(faceIndex))
+        return true
+
+      return face.every((position, positionIndex) => {
+        if (POSITIONS_TO_SECOND_LAYER_CHECK.includes(positionIndex)) {
+          return position === defaultState[faceIndex][positionIndex];
+        }
+
+        return true
+      })
+    })
+
+    return isWhiteFaceSolved && isSidesSolved;
+  }
+
+  /**
    * Return if white cross is done
    */
   public get isWhiteCrossDone(): boolean {
@@ -62,6 +88,82 @@ export class LayerSolver extends ASolver {
 
   private isPositionInRightPlace(face: number, position: number): boolean {
     return this.defaultState[face][position] === this.cube.faces[face][position];
+  }
+
+  /**
+   * Move middle forehead
+   * @param value value of middle forehead
+   */
+   private moveMiddleForehead(value: number): MOVEMENT[] {
+    const moves = [];
+
+    // middle forehead data
+    const [middleFace, middlePosition] = this.getPositionCoordinatesByValue(value);
+    const [middleOriginalFace] = this.getOriginalPositionCoordinatesByValue(value);
+
+    // Sibling data
+    const siblingValue = this.getSiblingForeheadValue(value);
+    const [siblingFace] = this.getPositionCoordinatesByValue(siblingValue);
+    const [siblingOriginalFace] = this.getOriginalPositionCoordinatesByValue(siblingValue);
+    const siblingNextFace = this.getPrevOrNextHorizontalFace(siblingFace, false);
+    const siblingFaceMovementMap = FACE_MOVEMENTS_MAP[siblingFace];
+    const siblingRotationMap = VERTICAL_ROTATIONS_MAP[siblingFace];
+
+    // Distances
+    const horizontalSiblingFaceTargetDistance = this.getHorizontalTargetFaceMoveCount(siblingFace, siblingOriginalFace);
+
+    if (
+      siblingFace === 2 ||
+      (![middleFace, siblingFace].includes(2) && middlePosition !== 5)
+    ) {
+      return this.moveMiddleForehead(siblingValue);
+    }
+
+    // movements
+    const leftMovements = [
+      siblingFaceMovementMap.horizontal.top.left,
+      siblingFaceMovementMap.vertical.right.top,
+      siblingFaceMovementMap.horizontal.top.left,
+      siblingFaceMovementMap.vertical.right.bottom,
+      siblingFaceMovementMap.horizontal.top.right,
+      siblingRotationMap[0],
+      siblingFaceMovementMap.horizontal.top.right,
+      siblingRotationMap[1]
+    ];
+
+    const rightMovements = [
+      siblingFaceMovementMap.horizontal.top.right,
+      siblingFaceMovementMap.vertical.left.top,
+      siblingFaceMovementMap.horizontal.top.right,
+      siblingFaceMovementMap.vertical.left.bottom,
+      siblingFaceMovementMap.horizontal.top.left,
+      siblingRotationMap[1],
+      siblingFaceMovementMap.horizontal.top.left,
+      siblingRotationMap[0]
+    ];
+
+    if (
+      middleFace === 2 &&
+      horizontalSiblingFaceTargetDistance !== 0
+    ) {
+      const horizontalTopMap = siblingFaceMovementMap.horizontal.top;
+      const directionMove = horizontalSiblingFaceTargetDistance >= 1 ? horizontalTopMap.left : horizontalTopMap.right;
+
+      moves.push(...Array.from({ length: Math.abs(horizontalSiblingFaceTargetDistance) }).fill(directionMove))
+    }
+
+    if (
+      middleFace === 2 &&
+      horizontalSiblingFaceTargetDistance === 0
+    ) {
+      moves.push(...(siblingNextFace === middleOriginalFace ? leftMovements : rightMovements));
+    }
+
+    if (![middleFace, siblingFace].includes(2)) {
+      moves.push(...rightMovements)
+    }
+
+    return moves;
   }
 
   /**
@@ -102,8 +204,6 @@ export class LayerSolver extends ASolver {
 
       moves.push(verticalMap[whitePosition === 1 ? "bottom" : "top"])
       this._movesToRestoreAffectedFaces.push(verticalMap[whitePosition === 1 ? "top" : "bottom"])
-
-      // to solve apos
     }
 
     // resolve quando ta a branca ta na em cima ou baixo nas laterais e a testa ta longe do destino
@@ -205,6 +305,27 @@ export class LayerSolver extends ASolver {
 
     while (!isForeheadSolved && tries <= MAX_WHITE_FOREHEAD_TRIES_COUNT) {
       const moves = this.moveWhiteForehead(value);
+
+      this._moves.push(...moves);
+      this.cube.moveMany(moves);
+
+      tries++;
+      isForeheadSolved = this.isPositionInRightPlace(
+        ...this.getPositionCoordinatesByValue(value)
+      );
+    }
+  }
+
+  /**
+   * Solve diddle forehead
+   * @param value value of Middle forehead
+   */
+   private solveMiddleForehead(value: number): void {
+    let tries = 0;
+    let isForeheadSolved = false;
+
+    while (!isForeheadSolved && tries <= MAX_MIDDLE_FOREHEAD_TRIES_COUNT) {
+      const moves = this.moveMiddleForehead(value);
 
       this._moves.push(...moves);
       this.cube.moveMany(moves);
@@ -425,12 +546,31 @@ export class LayerSolver extends ASolver {
     this.setWhiteCorners();
   }
 
+  private solveSecondLayer(): void {
+    const middleForeheadValues = this.getMiddleForeheads();
+
+    let tries = 0;
+
+    while(!this.isMiddleLayerSolved && tries < MAX_MIDDLE_FOREHEAD_TRIES_COUNT) {
+      middleForeheadValues.forEach(value => {
+        const valueCoordinates = this.getPositionCoordinatesByValue(value);
+
+        if (!this.isPositionInRightPlace(...valueCoordinates)) {
+          this.solveMiddleForehead(value)
+        }
+      })
+
+      tries++;
+    }
+  }
+
   public async getSolve(): Promise<MOVEMENT[]> {
     if (this.originalCube.isSolved) {
       throw new Error("Cube already solved");
     }
 
     this.solveFirstLayer();
+    this.solveSecondLayer();
 
     return new Promise((resolve) => resolve(this._moves));
   }

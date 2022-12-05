@@ -1,6 +1,7 @@
 import { MOVEMENT } from "../enums/Movement";
 
 export const POSITIONS_TO_FIRST_LAYER_CHECK = [6, 7, 8];
+export const POSITIONS_TO_SECOND_LAYER_CHECK = [3, 4, 5, 6, 7, 8];
 
 export const  VERTICAL_FULL_ROTATIONS_MAP = {
   1: [MOVEMENT.LEFT_DOUBLE],
@@ -178,3 +179,4 @@ export const MAX_WHITE_CROSS_TRIES_COUNT = 5;
 export const MAX_WHITE_FOREHEAD_TRIES_COUNT = 5;
 export const MAX_WHITE_CORNER_TRIES_COUNT = 5;
 export const MAX_WHITE_CORNERS_TRIES_COUNT = 5;
+export const MAX_MIDDLE_FOREHEAD_TRIES_COUNT = 5;
