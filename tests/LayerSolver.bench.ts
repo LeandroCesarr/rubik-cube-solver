@@ -40,4 +40,15 @@ describe('LayerSolver', () => {
     // Assert
     expect(solver.isBottomLayerSolved).toBeTruthy();
   }, { iterations: 1000 });
+
+  bench('Second layer soluton', async () => {
+    // Arrange
+    const { solver, cube } = makeSUT();
+
+    // Act
+    await solver.solve();
+
+    // Assert
+    expect(solver.isMiddleLayerSolved).toBeTruthy();
+  }, { iterations: 1000 });
 });

@@ -43,7 +43,7 @@ describe('LayerSolver', () => {
     expect(cube.faces[5][7]).toBe(defaultState[5][7]);
   });
 
-  it('Should have solved first layer', async () => {
+  it('Should have made first layer', async () => {
     // Arrange
     const { solver, cube } = makeSUT();
 
@@ -52,6 +52,17 @@ describe('LayerSolver', () => {
 
     // Assert
     expect(solver.isBottomLayerSolved).toBeTruthy();
+  });
+
+  it('Should have made second layer', async () => {
+    // Arrange
+    const { solver, cube } = makeSUT();
+
+    // Act
+    await solver.solve();
+
+    // Assert
+    expect(solver.isMiddleLayerSolved).toBeTruthy();
   });
 
   it('Should returns how to solve cube', async () => {
