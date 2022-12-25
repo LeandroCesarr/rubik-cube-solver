@@ -1,3 +1,4 @@
+import { getFaceByPosition } from "@/helpers/getFaceByPosition";
 import { ASolver, FACES_TO_FIRST_LAYER_IGNORE } from "../ASolver";
 import { Cube } from "../Cube";
 import { MOVEMENT } from "../enums/Movement";
@@ -12,6 +13,9 @@ import {
   MAX_WHITE_CORNER_TRIES_COUNT,
   POSITIONS_TO_SECOND_LAYER_CHECK,
   MAX_MIDDLE_FOREHEAD_TRIES_COUNT,
+  YELLOW_CROSS_CASES,
+  FOREHEADS_POSITIONS,
+  MAX_YELLOW_CROSS_TRIES_COUNT,
 } from './constants';
 
 export class LayerSolver extends ASolver {
@@ -25,6 +29,17 @@ export class LayerSolver extends ASolver {
    * Mote to restore affected face by other face
    */
   private _movesToRestoreAffectedFaces: MOVEMENT[] = []
+
+  private _faceToYellowCrossChange = 4;
+
+  public get isYellowCrossSolved(): boolean {
+    return (
+      getFaceByPosition(this.cube.faces[2][1]) === 2 &&
+      getFaceByPosition(this.cube.faces[2][3]) === 2 &&
+      getFaceByPosition(this.cube.faces[2][5]) === 2 &&
+      getFaceByPosition(this.cube.faces[2][7]) === 2
+    )
+  }
 
   /**
    * Returns if bottom layer is solved
@@ -541,6 +556,73 @@ export class LayerSolver extends ASolver {
     }
   }
 
+  private moveYellowForeheads(foreheads: number[]): MOVEMENT[] {
+    const moves = [];
+
+    const foreheadsCoordinates = foreheads.reduce((acc, curr) => {
+      return {
+        ...acc,
+        [curr]: this.getPositionCoordinatesByValue(curr)
+      };
+    } ,{})
+
+    const foreheadsInRightPosition = foreheads.filter((position) => {
+      const coordinates = foreheadsCoordinates[position];
+
+      return FOREHEADS_POSITIONS.includes(coordinates[1]) && coordinates[0] === 2;
+    } , 0);
+
+    if (foreheadsInRightPosition.length === 2) {
+      const foundCase = YELLOW_CROSS_CASES.find((i) => {
+        const firstPosition = foreheadsCoordinates[foreheadsInRightPosition[0]][1];
+        const secondPosition = foreheadsCoordinates[foreheadsInRightPosition[1]][1];
+
+        return (
+          i[0] === firstPosition &&
+          i[1] === secondPosition
+        ) || (
+          i[0] === secondPosition &&
+          i[1] === firstPosition
+        )
+      });
+
+      if (foundCase) {
+        this._faceToYellowCrossChange = foundCase[2];
+      }
+    }
+
+    const { horizontal, vertical } = FACE_MOVEMENTS_MAP[this._faceToYellowCrossChange];
+    const fullRotationMap = VERTICAL_ROTATIONS_MAP[this._faceToYellowCrossChange];
+
+    moves.push(
+      fullRotationMap[1],
+      vertical.right.top,
+      horizontal.top.left,
+      vertical.right.bottom,
+      horizontal.top.right,
+      fullRotationMap[0]
+    )
+
+    return moves;
+  }
+
+  private setYellowCross(): void {
+    const yellowForeheadValues = this.getForeheadsByFace(2);
+
+    let tries = 0;
+
+    while(!this.isYellowCrossSolved && tries < MAX_YELLOW_CROSS_TRIES_COUNT) {
+      const moves = this.moveYellowForeheads(yellowForeheadValues);
+
+      this._moves.push(...moves);
+      this.cube.moveMany(moves);
+
+      tries++;
+    }
+
+    this._faceToYellowCrossChange = 4;
+  }
+
   private solveFirstLayer(): void {
     this.setWhiteCross();
     this.setWhiteCorners();
@@ -564,13 +646,18 @@ export class LayerSolver extends ASolver {
     }
   }
 
+  private solveThirdLayer(): void {
+    this.setYellowCross();
+  }
+
   public async getSolve(): Promise<MOVEMENT[]> {
-    if (this.originalCube.isSolved) {
-      throw new Error("Cube already solved");
-    }
+    // if (this.originalCube.isSolved) {
+    //   throw new Error("Cube already solved");
+    // }
 
     this.solveFirstLayer();
     this.solveSecondLayer();
+    this.solveThirdLayer();
 
     return new Promise((resolve) => resolve(this._moves));
   }

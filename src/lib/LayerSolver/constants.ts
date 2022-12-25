@@ -175,8 +175,21 @@ export const FACE_MOVEMENTS_MAP: Record<number, IFaceMovementMap> = {
   }
 }
 
+/**
+ * left position, right position, face to change
+ */
+export const YELLOW_CROSS_CASES = [
+  [3, 1, 4],
+  [1, 5, 1],
+  [5, 7, 0],
+  [7, 3, 3],
+]
+
+export const FOREHEADS_POSITIONS = [1, 3, 5, 7];
+
 export const MAX_WHITE_CROSS_TRIES_COUNT = 5;
 export const MAX_WHITE_FOREHEAD_TRIES_COUNT = 5;
 export const MAX_WHITE_CORNER_TRIES_COUNT = 5;
 export const MAX_WHITE_CORNERS_TRIES_COUNT = 5;
 export const MAX_MIDDLE_FOREHEAD_TRIES_COUNT = 5;
+export const MAX_YELLOW_CROSS_TRIES_COUNT = 5;
