@@ -4,7 +4,7 @@ import { LayerSolver } from '@/lib/LayerSolver';
 import { describe, expect, it } from 'vitest';
 import { defaultState } from './data/cube/defaultState';
 
-const state = [
+export const testState = [
   [12, 42, 45, 24, 5, 4, 52, 40, 43],
   [48, 17, 30, 33, 14, 47, 46, 11, 36],
   [34, 31, 37, 49, 23, 6, 21, 20, 39],
@@ -63,6 +63,17 @@ describe('LayerSolver', () => {
 
     // Assert
     expect(solver.isMiddleLayerSolved).toBeTruthy();
+  });
+
+  it('Should have made yellow cross', async () => {
+    // Arrange
+    const { solver, cube } = makeSUT();
+
+    // Act
+    await solver.solve();
+
+    // Assert
+    expect(solver.isYellowCrossSolved).toBeTruthy();
   });
 
   it('Should returns how to solve cube', async () => {

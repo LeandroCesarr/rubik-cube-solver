@@ -51,4 +51,15 @@ describe('LayerSolver', () => {
     // Assert
     expect(solver.isMiddleLayerSolved).toBeTruthy();
   }, { iterations: 1000 });
+
+  bench('Yellow cross solution', async () => {
+    // Arrange
+    const { solver, cube } = makeSUT();
+
+    // Act
+    await solver.solve();
+
+    // Assert
+    expect(solver.isYellowCrossSolved).toBeTruthy();
+  }, { iterations: 1000 });
 });
