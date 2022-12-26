@@ -193,3 +193,42 @@ export const MAX_WHITE_CORNER_TRIES_COUNT = 5;
 export const MAX_WHITE_CORNERS_TRIES_COUNT = 5;
 export const MAX_MIDDLE_FOREHEAD_TRIES_COUNT = 5;
 export const MAX_YELLOW_CROSS_TRIES_COUNT = 5;
+
+export const YELLOW_FACE_PATTERNS = {
+  twoCorners: [
+    {
+      positions: [0, 2],
+      face: 0
+    },
+    {
+      positions: [0, 6],
+      face: 1
+    },
+    {
+      positions: [2, 8],
+      face: 3
+    },
+    {
+      positions: [6, 8],
+      face: 4
+    }
+  ],
+  fish: [
+    {
+      positions: [8, 6, 0],
+      face: 0
+    },
+    {
+      positions: [2, 8, 6],
+      face: 1
+    },
+    {
+      positions: [0, 2, 8],
+      face: 4
+    },
+    {
+      positions: [0, 2, 6],
+      face: 3
+    }
+  ]
+}

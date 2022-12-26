@@ -1,4 +1,5 @@
 import { getFaceByPosition } from "@/helpers/getFaceByPosition";
+import { getYellowPatternTargetFace } from "@/helpers/getYellowPatternTargetFace";
 import { ASolver, FACES_TO_FIRST_LAYER_IGNORE } from "../ASolver";
 import { Cube } from "../Cube";
 import { MOVEMENT } from "../enums/Movement";
@@ -31,6 +32,7 @@ export class LayerSolver extends ASolver {
   private _movesToRestoreAffectedFaces: MOVEMENT[] = []
 
   private _faceToYellowCrossChange = 4;
+  private _faceToYellowFaceChange = 4;
 
   public get isYellowCrossSolved(): boolean {
     return (
@@ -39,6 +41,11 @@ export class LayerSolver extends ASolver {
       getFaceByPosition(this.cube.faces[2][5]) === 2 &&
       getFaceByPosition(this.cube.faces[2][7]) === 2
     )
+  }
+
+  public get isYellowFaceSolved(): boolean {
+    return this.cube.faces[2]
+      .every((position) => getFaceByPosition(position) === 2);
   }
 
   /**
@@ -606,6 +613,42 @@ export class LayerSolver extends ASolver {
     return moves;
   }
 
+  private moveYellowFace(): MOVEMENT[] {
+    const faceTarget = getYellowPatternTargetFace(this.cube.faces[2]);
+
+    if (faceTarget != undefined) {
+      this._faceToYellowFaceChange = faceTarget;
+    }
+
+    const { horizontal, vertical } = FACE_MOVEMENTS_MAP[this._faceToYellowFaceChange];
+
+    return [
+      vertical.right.top,
+      horizontal.top.left,
+      vertical.right.bottom,
+      horizontal.top.left,
+      vertical.right.top,
+      horizontal.top.left,
+      horizontal.top.left,
+      vertical.right.bottom,
+    ]
+  }
+
+  private setYellowFace(): void {
+    let tries = 0;
+
+    while(!this.isYellowFaceSolved && tries < 10) {
+      const moves = this.moveYellowFace();
+
+      this._moves.push(...moves);
+      this.cube.moveMany(moves);
+
+      tries++;
+    }
+
+    this._faceToYellowCrossChange = 4;
+  }
+
   private setYellowCross(): void {
     const yellowForeheadValues = this.getForeheadsByFace(2);
 
@@ -648,6 +691,7 @@ export class LayerSolver extends ASolver {
 
   private solveThirdLayer(): void {
     this.setYellowCross();
+    this.setYellowFace();
   }
 
   public async getSolve(): Promise<MOVEMENT[]> {
