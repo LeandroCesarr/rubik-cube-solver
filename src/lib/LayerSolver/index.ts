@@ -43,6 +43,14 @@ export class LayerSolver extends ASolver {
     )
   }
 
+  public get isYellowCornersSolved(): boolean {
+    return this.cube.faces
+      .filter((_, faceIndex) => ![2, 5].includes(faceIndex))
+      .every((face) => {
+        return getFaceByPosition(face[0]) == getFaceByPosition(face[2])
+      })
+  }
+
   public get isYellowFaceSolved(): boolean {
     return this.cube.faces[2]
       .every((position) => getFaceByPosition(position) === 2);
@@ -634,6 +642,68 @@ export class LayerSolver extends ASolver {
     ]
   }
 
+  private getYellowTargetFacesWithResolvedCorners(): number[] {
+    return this.cube.faces
+      .map((face, index) => ({ index, face }))
+      .filter((faceData) => ![2, 5].includes(faceData.index))
+      .filter((faceData) => {
+        return getFaceByPosition(faceData.face[0]) == getFaceByPosition(faceData.face[2])
+      }).map((face) => face.index)
+  }
+
+  private static getRandomHorizontalFace(): number {
+    const faces = Array
+      .from({ length: 6 })
+      .map((_, index) => index)
+      .filter((_, index) =>
+        ![2, 5].includes(index)
+      );
+
+    return faces[Math.floor(Math.random() * faces.length)]
+  }
+
+  private moveYellowCorners(): MOVEMENT[] {
+    let targetFace = LayerSolver.getRandomHorizontalFace();
+    const facesWithResolvedCorners = this.getYellowTargetFacesWithResolvedCorners();
+
+    if (facesWithResolvedCorners.length === 1) {
+      targetFace = this.getPrevOrNextHorizontalFace(facesWithResolvedCorners[0], false);
+    }
+
+    const { horizontal, vertical } = FACE_MOVEMENTS_MAP[targetFace];
+    const fullRotationMap = VERTICAL_ROTATIONS_MAP[targetFace];
+
+    return [
+      vertical.right.top,
+      horizontal.top.left,
+      vertical.right.bottom,
+      fullRotationMap[0],
+      vertical.right.top,
+      horizontal.top.left,
+      vertical.right.bottom,
+      horizontal.top.right,
+      vertical.right.bottom,
+      fullRotationMap[1],
+      vertical.right.bottom,
+      vertical.right.bottom,
+      horizontal.top.right,
+      vertical.right.bottom,
+    ];
+  }
+
+  private setYellowCorners(): void {
+    let tries = 0;
+
+    while(!this.isYellowCornersSolved && tries < 2) {
+      const moves = this.moveYellowCorners();
+
+      this._moves.push(...moves);
+      this.cube.moveMany(moves);
+
+      tries++;
+    }
+  }
+
   private setYellowFace(): void {
     let tries = 0;
 
@@ -645,8 +715,6 @@ export class LayerSolver extends ASolver {
 
       tries++;
     }
-
-    this._faceToYellowCrossChange = 4;
   }
 
   private setYellowCross(): void {
@@ -692,6 +760,7 @@ export class LayerSolver extends ASolver {
   private solveThirdLayer(): void {
     this.setYellowCross();
     this.setYellowFace();
+    this.setYellowCorners();
   }
 
   public async getSolve(): Promise<MOVEMENT[]> {
