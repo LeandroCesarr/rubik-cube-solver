@@ -104,6 +104,18 @@ describe('LayerSolver', () => {
     expect(solver.isYellowFaceSolved).toBeTruthy();
   });
 
+  it('Should have made yellow corners', async () => {
+    // Arrange
+    // const { solver } = makeSUT(false, testState);
+    const { solver } = makeSUT();
+
+    // Act
+    await solver.solve();
+
+    // Assert
+    expect(solver.isYellowCornersSolved).toBeTruthy();
+  });
+
   // it('Should returns how to solve cube', async () => {
   //   // Arrange
   //   const { solver, cube } = makeSUT(false, testState);

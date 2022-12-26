@@ -73,4 +73,15 @@ describe('LayerSolver', () => {
     // Assert
     expect(solver.isYellowFaceSolved).toBeTruthy();
   }, { iterations: 1000 });
+
+  bench('Yellow corners solution', async () => {
+    // Arrange
+    const { solver, cube } = makeSUT();
+
+    // Act
+    await solver.solve();
+
+    // Assert
+    expect(solver.isYellowCornersSolved).toBeTruthy();
+  }, { iterations: 1000 });
 });
