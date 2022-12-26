@@ -5,23 +5,23 @@ import { defaultState } from './data/cube/defaultState';
 
 export const testState = [
   [
-    1, 2, 28, 4, 5,
-    6, 7,  8, 9
+    10, 11, 12, 4, 5,
+     6,  7,  8, 9
   ],
   [
-    27, 29, 12, 13, 14,
+    37, 38, 39, 13, 14,
     15, 16, 17, 18
   ],
   [
-    39, 20, 21, 24, 23,
-    22, 25, 26, 10
+    25, 22, 19, 26, 23,
+    20, 27, 24, 21
   ],
   [
-     3, 11, 30, 31, 32,
+     1,  2,  3, 31, 32,
     33, 34, 35, 36
   ],
   [
-    37, 38, 19, 40, 41,
+    28, 29, 30, 40, 41,
     42, 43, 44, 45
   ],
   [
@@ -106,7 +106,6 @@ describe('LayerSolver', () => {
 
   it('Should have made yellow corners', async () => {
     // Arrange
-    // const { solver } = makeSUT(false, testState);
     const { solver } = makeSUT();
 
     // Act
@@ -116,29 +115,41 @@ describe('LayerSolver', () => {
     expect(solver.isYellowCornersSolved).toBeTruthy();
   });
 
-  // it('Should returns how to solve cube', async () => {
-  //   // Arrange
-  //   const { solver, cube } = makeSUT(false, testState);
+  it('Should have made yellow foreheads', async () => {
+    // Arrange
+    const { solver } = makeSUT();
 
-  //   // Act
-  //   expect(cube.faces).toStrictEqual(testState);
+    // Act
+    await solver.solve();
 
-  //   const solve = await solver.getSolve();
+    // Assert
+    expect(solver.isYellowForeheadsSolved).toBeTruthy();
+  });
 
-  //   cube.moveMany(solve);
+  it('Should returns how to solve cube', async () => {
+    // Arrange
+    const { solver, cube } = makeSUT(false, testState);
 
-  //   // Assert
-  //   expect(cube.isSolved).toBeTruthy();
-  // });
+    // Act
+    expect(cube.faces).toStrictEqual(testState);
 
-  // it('Should solved cube', () => {
-  //   // Arrange
-  //   const { solver, cube } = makeSUT();
+    const solve = await solver.getSolve();
 
-  //   // Act
-  //   solver.solve();
+    cube.moveMany(solve);
 
-  //   // Assert
-  //   expect(cube.isSolved).toBeTruthy();
-  // });
+    // Assert
+    expect(cube.isSolved).toBeTruthy();
+  });
+
+  it('Should solved cube', async () => {
+    // Arrange
+    const { solver, cube } = makeSUT(false, testState);
+    // const { solver, cube } = makeSUT();
+
+    // Act
+    await solver.solve();
+
+    // Assert
+    expect(cube.isSolved).toBeTruthy();
+  });
 });

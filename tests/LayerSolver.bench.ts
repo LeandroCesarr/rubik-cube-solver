@@ -84,4 +84,26 @@ describe('LayerSolver', () => {
     // Assert
     expect(solver.isYellowCornersSolved).toBeTruthy();
   }, { iterations: 1000 });
+
+  bench('Yellow foreheads solution', async () => {
+    // Arrange
+    const { solver, cube } = makeSUT();
+
+    // Act
+    await solver.solve();
+
+    // Assert
+    expect(solver.isYellowForeheadsSolved).toBeTruthy();
+  }, { iterations: 1000 });
+
+  bench('Cube solution', async () => {
+    // Arrange
+    const { solver, cube } = makeSUT();
+
+    // Act
+    await solver.solve();
+
+    // Assert
+    expect(cube.isSolved).toBeTruthy();
+  }, { iterations: 1000 });
 });
