@@ -43,6 +43,14 @@ export class LayerSolver extends ASolver {
     )
   }
 
+  public get isYellowForeheadsSolved(): boolean {
+    return this.cube.faces
+      .filter((_, faceIndex) => ![2, 5].includes(faceIndex))
+      .every((face) => {
+        return face.slice(0, 3).every(position => getFaceByPosition(face[0]) === getFaceByPosition(position))
+      })
+  }
+
   public get isYellowCornersSolved(): boolean {
     return this.cube.faces
       .filter((_, faceIndex) => ![2, 5].includes(faceIndex))
@@ -571,7 +579,7 @@ export class LayerSolver extends ASolver {
     }
   }
 
-  private moveYellowForeheads(foreheads: number[]): MOVEMENT[] {
+  private moveYellowForeheadGroups(foreheads: number[]): MOVEMENT[] {
     const moves = [];
 
     const foreheadsCoordinates = foreheads.reduce((acc, curr) => {
@@ -640,6 +648,127 @@ export class LayerSolver extends ASolver {
       horizontal.top.left,
       vertical.right.bottom,
     ]
+  }
+
+  private setUpperFace(): void {
+    const moves = [];
+    const targetFace = 0;
+    const originalTargetFace = this.getOriginalPositionCoordinatesByValue(this.cube.faces[targetFace][0])[0];
+    const distance = this.getHorizontalTargetFaceMoveCount(targetFace, originalTargetFace);
+    const { horizontal } = FACE_MOVEMENTS_MAP[targetFace];
+
+    const directionMove = distance >= 1 ? horizontal.top.left : horizontal.top.right;
+
+    // console.log({
+    //   test: this.cube.faces[targetFace][0],
+    //   targetFace,
+    //   originalTargetFace,
+    //   distance,
+    //   directionMove
+    // });
+
+    moves.push(...Array.from({ length: Math.abs(distance) }).fill(directionMove));
+
+    this._moves.push(...moves);
+    this.cube.moveMany(moves);
+  }
+
+  /**
+   * true -> direita
+   * @param face
+   * @returns
+   */
+  private getTargetSideFromYellowForehead(face: number): boolean {
+    const oppositeFace = this.getPrevOrNextHorizontalFace(
+      this.getPrevOrNextHorizontalFace(face, true),
+      true
+    );
+
+    const originalFaceTarget = getFaceByPosition(this.cube.faces[oppositeFace][0]);
+    const positionValueTarget = this.defaultState[originalFaceTarget][1];
+    const targetFace = this.getPositionCoordinatesByValue(positionValueTarget)[0];
+    const distance = this.getHorizontalTargetFaceMoveCount(oppositeFace, targetFace);
+
+    return distance > 0;
+  }
+
+  private getYellowResolvedForeheadsFaces(): number[] {
+    return this.cube.faces
+      .map((face, index) => ({ face, index }))
+      .filter((faceData) => ![2, 5].includes(faceData.index))
+      .filter((faceData) => {
+        return faceData.face.slice(0, 3).every(position => getFaceByPosition(faceData.face[0]) === getFaceByPosition(position))
+      }).map((faceData) => faceData.index)
+  }
+
+  private moveYellowForeheads(): MOVEMENT[] {
+    const resolvedFaces = this.getYellowResolvedForeheadsFaces();
+
+    let targetFace = resolvedFaces[0] ?? 0;
+    let isRightSideTarget = true;
+
+    if (resolvedFaces.length === 1) {
+      isRightSideTarget = this.getTargetSideFromYellowForehead(resolvedFaces[0]);
+    }
+
+    const { horizontal, vertical } = FACE_MOVEMENTS_MAP[targetFace];
+
+    const leftFirstMove = [
+      vertical.left.top,
+      horizontal.top.right,
+      vertical.left.bottom,
+      horizontal.top.left,
+    ];
+
+    const leftEndMove = [
+      horizontal.top.right,
+      vertical.left.top,
+      horizontal.top.left,
+      vertical.left.bottom,
+    ];
+
+    const rightFirstMove = [
+      vertical.right.top,
+      horizontal.top.left,
+      vertical.right.bottom,
+      horizontal.top.right,
+    ];
+
+    const rightEndMove = [
+      horizontal.top.left,
+      vertical.right.top,
+      horizontal.top.right,
+      vertical.right.bottom,
+    ];
+
+    if (isRightSideTarget) {
+      return [
+        ...rightFirstMove,
+        ...leftFirstMove,
+        ...rightEndMove,
+        ...leftEndMove
+      ];
+    }
+
+    return [
+      ...leftFirstMove,
+      ...rightFirstMove,
+      ...leftEndMove,
+      ...rightEndMove
+    ];
+  }
+
+  private setYellowForeheads(): void {
+    let tries = 0;
+
+    while(!this.isYellowForeheadsSolved && tries < 2) {
+      const moves = this.moveYellowForeheads();
+
+      this._moves.push(...moves);
+      this.cube.moveMany(moves);
+
+      tries++;
+    }
   }
 
   private getYellowTargetFacesWithResolvedCorners(): number[] {
@@ -723,7 +852,7 @@ export class LayerSolver extends ASolver {
     let tries = 0;
 
     while(!this.isYellowCrossSolved && tries < MAX_YELLOW_CROSS_TRIES_COUNT) {
-      const moves = this.moveYellowForeheads(yellowForeheadValues);
+      const moves = this.moveYellowForeheadGroups(yellowForeheadValues);
 
       this._moves.push(...moves);
       this.cube.moveMany(moves);
@@ -761,6 +890,8 @@ export class LayerSolver extends ASolver {
     this.setYellowCross();
     this.setYellowFace();
     this.setYellowCorners();
+    this.setYellowForeheads();
+    this.setUpperFace();
   }
 
   public async getSolve(): Promise<MOVEMENT[]> {
