@@ -1,8 +1,16 @@
 import type { NextPage } from 'next';
-import { ButtonHTMLAttributes, FC, FormEvent, Fragment, useEffect, useRef, useState } from 'react';
-import { Cube } from '@/lib/Cube';
-import { MOVEMENT } from '@/lib/enums/Movement';
-import { LayerSolver } from '@/lib/LayerSolver';
+import {
+  ButtonHTMLAttributes,
+  FC,
+  FormEvent,
+  Fragment,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { Cube } from '../../lib/Cube';
+import { MOVEMENT } from '../../lib/enums/Movement';
+import { LayerSolver } from '../../lib/LayerSolver';
 
 const COLORS = [
   'bg-cyan-700',
@@ -83,7 +91,7 @@ function useCube(): Cube {
   const cubeRef = useRef<Cube>();
 
   if (!cubeRef.current) {
-      cubeRef.current = new Cube();
+    cubeRef.current = new Cube();
   }
   return cubeRef.current;
 }
@@ -97,46 +105,23 @@ function useSolver(cube: Cube): LayerSolver {
   return solverRef.current;
 }
 
-function useAnimateSolve(cube: Cube): { animate: (moves: MOVEMENT[]) => void } {
-  const [moves, setMoves] = useState([])
-
-  function animate(moves: MOVEMENT[]): void {
-    setMoves(moves);
-  }
-
-  useEffect(() => {
-
-    if (moves.length) {
-      console.log("caiu aqui");
-      const id = setTimeout(() => {
-        setMoves(old => {
-          cube.move(old[old.length - 1]);
-          return [...old.slice(0, old.length - 2)]
-        })
-      }, 1000)
-
-      return () => clearTimeout(id);
-    }
-  }, [moves])
-
-  return {
-    animate,
-  }
-}
-
 const Home: NextPage = () => {
   const cube = useCube();
   const solver = useSolver(cube);
   const [moves, setMoves] = useState<string[]>([]);
-  const [sequence, setSequence] = useState<string>("");
-  const { animate } = useAnimateSolve(cube);
+  const [sequence, setSequence] = useState<string>('');
+  const [counter, setCounter] = useState(-1);
 
   function onSubmit(evt: FormEvent): void {
     evt.preventDefault();
 
-    const moves = sequence.replaceAll("'", "").replace(/^, /g, ",").split(",").map((item) => item.trim()) as MOVEMENT[];
+    const moves = sequence
+      .replaceAll("'", '')
+      .replace(/\s/g, '')
+      .split(',')
+      .map((item) => item.split("").join(" ")) as MOVEMENT[];
 
-    cube.moveMany(moves)
+    cube.moveMany(moves);
     setMoves(moves);
   }
 
@@ -153,9 +138,31 @@ const Home: NextPage = () => {
 
   function handleShuffle(): void {
     const moves = cube.shuffle();
-
-    setMoves(moves);
+    setMoves((old) => ([...old]));
   }
+
+  async function handleSolve(): Promise<void> {
+    const asolver = new LayerSolver(cube);
+    const moves = await asolver.getSolve();
+
+    // cube.moveMany(moves);
+
+    setMoves((old) => [...old, ...moves]);
+    setCounter(0);
+  }
+
+  useEffect(() => {
+    if (counter != -1 && counter != moves.length) {
+      console.log('caiu aqui');
+
+      const id = setTimeout(() => {
+        cube.move(moves[counter] as MOVEMENT)
+        setCounter(old => old + 1)
+      }, 300)
+
+      return () => clearTimeout(id);
+    }
+  }, [counter]);
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -167,7 +174,7 @@ const Home: NextPage = () => {
           <div className="flex flex-wrap gap-2 mt-2">
             {Object.entries(MOVEMENT).map(([key, value]) => (
               <MoveButton key={value} onClick={() => handleMove(value)}>
-                <span>{value}</span>
+                <span>{value.split("").join(" ")}</span>
               </MoveButton>
             ))}
           </div>
@@ -175,7 +182,11 @@ const Home: NextPage = () => {
         <div className="">
           <h2>Input sequence</h2>
           <form onSubmit={onSubmit} className="flex flex-wrap gap-2 mt-2">
-            <input type="text" className='text-black' onChange={(evt) => setSequence(evt.target.value)} />
+            <input
+              type="text"
+              className="text-black"
+              onChange={(evt) => setSequence(evt.target.value)}
+            />
             <ActionButton onClick={handleReset}>Submit</ActionButton>
           </form>
         </div>
@@ -184,7 +195,7 @@ const Home: NextPage = () => {
           <div className="flex flex-wrap space-x-2 mt-2">
             <ActionButton onClick={handleReset}>Reset</ActionButton>
             <ActionButton onClick={handleShuffle}>Shuffle</ActionButton>
-            <ActionButton onClick={() => animate([MOVEMENT.BACK, MOVEMENT.FRONT, MOVEMENT.RIGHT_DOUBLE])}>Solve</ActionButton>
+            <ActionButton onClick={handleSolve}>Solve</ActionButton>
           </div>
         </div>
         <div>
