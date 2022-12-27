@@ -133,7 +133,7 @@ export class LayerSolver extends ASolver {
    * @param value value of middle forehead
    */
    private moveMiddleForehead(value: number): MOVEMENT[] {
-    const moves = [];
+    const moves: MOVEMENT[] = [];
 
     // middle forehead data
     const [middleFace, middlePosition] = this.getPositionCoordinatesByValue(value);
@@ -187,7 +187,7 @@ export class LayerSolver extends ASolver {
       const horizontalTopMap = siblingFaceMovementMap.horizontal.top;
       const directionMove = horizontalSiblingFaceTargetDistance >= 1 ? horizontalTopMap.left : horizontalTopMap.right;
 
-      moves.push(...Array.from({ length: Math.abs(horizontalSiblingFaceTargetDistance) }).fill(directionMove))
+      moves.push(...(Array.from({ length: Math.abs(horizontalSiblingFaceTargetDistance) }).fill(directionMove) as MOVEMENT[]))
     }
 
     if (
@@ -214,7 +214,7 @@ export class LayerSolver extends ASolver {
     // White forehead data
     const [whiteFace, whitePosition] = this.getPositionCoordinatesByValue(value);
     const whiteFaceRotationMap = VERTICAL_ROTATIONS_MAP[whiteFace];
-    const whiteFaceFullRotationMap = VERTICAL_FULL_ROTATIONS_MAP[whiteFace];
+    const whiteFaceFullRotationMap = (VERTICAL_FULL_ROTATIONS_MAP as any)[whiteFace];
     const whiteFaceMovementsMap = FACE_MOVEMENTS_MAP[whiteFace];
 
     // Sibling data
@@ -306,7 +306,7 @@ export class LayerSolver extends ASolver {
       // console.log('#4');
 
       // rotate faces
-      const rotationMap = VERTICAL_FULL_ROTATIONS_MAP[siblingFace];
+      const rotationMap = (VERTICAL_FULL_ROTATIONS_MAP as any)[siblingFace];
 
       moves.push(...rotationMap);
     }
@@ -325,7 +325,7 @@ export class LayerSolver extends ASolver {
     if (whiteFace === 5 && !isSiblingForeheadInRightFace) {
       // console.log('#THE LAST LAST MESMO');
 
-      const rotationMap = VERTICAL_FULL_ROTATIONS_MAP[siblingFace];
+      const rotationMap = (VERTICAL_FULL_ROTATIONS_MAP as any)[siblingFace];
 
       moves.push(...rotationMap);
     }
@@ -395,7 +395,7 @@ export class LayerSolver extends ASolver {
 
   private moveWhiteCorner(value: number): MOVEMENT[] {
     const valueToScan = value;
-    const moves = [];
+    const moves: MOVEMENT[] = [];
 
     // White forehead data
     const [whiteFace, whitePosition] = this.getPositionCoordinatesByValue(value);
@@ -439,7 +439,7 @@ export class LayerSolver extends ASolver {
 
       const directionMove = distance >= 1 ? horizontal.top.left : horizontal.top.right;
 
-      moves.push(...Array.from({ length: Math.abs(distance) }).fill(directionMove));
+      moves.push(...(Array.from({ length: Math.abs(distance) }).fill(directionMove) as MOVEMENT[]));
     }
 
     if (
@@ -453,7 +453,7 @@ export class LayerSolver extends ASolver {
 
       const directionMove = distance >= 1 ? horizontal.top.left : horizontal.top.right;
 
-      moves.push(...Array.from({ length: Math.abs(distance) + 1 }).fill(directionMove));
+      moves.push(...(Array.from({ length: Math.abs(distance) + 1 }).fill(directionMove) as MOVEMENT[]));
     }
 
     if (
@@ -467,7 +467,7 @@ export class LayerSolver extends ASolver {
 
       const directionMove = moveCount >= 1 ? horizontal.top.left : horizontal.top.right;
 
-      moves.push(...Array.from({ length: Math.abs(moveCount) }).fill(directionMove))
+      moves.push(...(Array.from({ length: Math.abs(moveCount) }).fill(directionMove) as MOVEMENT[]))
     }
 
     if (whiteFace === 5) {
@@ -590,15 +590,15 @@ export class LayerSolver extends ASolver {
     } ,{})
 
     const foreheadsInRightPosition = foreheads.filter((position) => {
-      const coordinates = foreheadsCoordinates[position];
+      const coordinates = (foreheadsCoordinates as any)[position];
 
       return FOREHEADS_POSITIONS.includes(coordinates[1]) && coordinates[0] === 2;
     } , 0);
 
     if (foreheadsInRightPosition.length === 2) {
       const foundCase = YELLOW_CROSS_CASES.find((i) => {
-        const firstPosition = foreheadsCoordinates[foreheadsInRightPosition[0]][1];
-        const secondPosition = foreheadsCoordinates[foreheadsInRightPosition[1]][1];
+        const firstPosition = (foreheadsCoordinates as any)[foreheadsInRightPosition[0]][1];
+        const secondPosition = (foreheadsCoordinates as any)[foreheadsInRightPosition[1]][1];
 
         return (
           i[0] === firstPosition &&
@@ -667,7 +667,7 @@ export class LayerSolver extends ASolver {
     //   directionMove
     // });
 
-    moves.push(...Array.from({ length: Math.abs(distance) }).fill(directionMove));
+    moves.push(...(Array.from({ length: Math.abs(distance) }).fill(directionMove) as MOVEMENT[]));
 
     this._moves.push(...moves);
     this.cube.moveMany(moves);

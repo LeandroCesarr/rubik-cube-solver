@@ -1,0 +1,12 @@
+
+> playground@0.1.0 lint
+> next lint
+
+warn  - You have enabled experimental feature (transpilePackages) in next.config.js.
+warn  - Experimental features are not covered by semver, and may cause unexpected or broken application behavior. Use at your own risk.
+
+
+./pages/index.tsx
+165:6  Warning: React Hook useEffect has missing dependencies: 'cube' and 'moves'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules

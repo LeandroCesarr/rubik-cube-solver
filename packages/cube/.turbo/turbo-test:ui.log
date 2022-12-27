@@ -1,0 +1,18 @@
+
+> test:ui
+> vitest --ui
+
+c
+ DEV  v0.24.5 /home/novahaus-dev/projects/wall-c-solver/rubik-cube-solver/packages/cube
+      UI started at http://localhost:51204/__vitest__/
+
+ ✓ tests/Cube.test.ts  (16 tests) 22ms
+
+Test Files  1 passed (1)
+     Tests  16 passed (16)
+  Start at  01:37:40
+  Duration  2.04s (transform 668ms, setup 0ms, collect 84ms, tests 22ms)
+
+
+ PASS  Waiting for file changes...
+       press h to show help, press q to quit

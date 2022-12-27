@@ -11,7 +11,7 @@ import {
 } from './modules/constants';
 import { MOVEMENT } from './modules/enums';
 
-function getRandomInt(min, max) {
+function getRandomInt(min: number, max: number) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -243,8 +243,8 @@ export class Cube {
    * @param facePositionsMap
    */
   private moveFaceVertically(faceIndex: number, targetFaceIndex: number, faceStateClone: number[], facePositionsMap: Record<number, number[]>): void {
-    const sourceFacePositionsIndex = [...facePositionsMap[faceIndex.toString()]];
-    const targetFacePositionsIndex = [...facePositionsMap[targetFaceIndex.toString()]];
+    const sourceFacePositionsIndex = [...(facePositionsMap as any)[faceIndex.toString()]];
+    const targetFacePositionsIndex = [...(facePositionsMap as any)[targetFaceIndex.toString()]];
     const revertedMap = targetFacePositionsIndex.slice().reverse();
 
     sourceFacePositionsIndex.forEach((facePositionIndex, idx) => {
@@ -367,7 +367,7 @@ export class Cube {
 
     Object.entries(FACE_ROTATION_MAP).forEach((map) => {
       if (reverse) {
-        this._faces[faceIndex][map[1]] = clonedFace[map[0]];
+        this._faces[faceIndex][map[1]] = (clonedFace as any)[map[0]];
       } else {
         this._faces[faceIndex][Number.parseInt(map[0])] = clonedFace[map[1]];
       }

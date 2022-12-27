@@ -1,0 +1,17 @@
+
+> test
+> vitest
+
+c
+ DEV  v0.24.5 /home/novahaus-dev/projects/wall-c-solver/rubik-cube-solver/packages/layer-solver
+
+ ✓ tests/LayerSolver.test.ts  (9 tests) 54ms
+
+Test Files  1 passed (1)
+     Tests  9 passed (9)
+  Start at  01:46:56
+  Duration  1.30s (transform 548ms, setup 0ms, collect 149ms, tests 54ms)
+
+
+ PASS  Waiting for file changes...
+       press h to show help, press q to quit

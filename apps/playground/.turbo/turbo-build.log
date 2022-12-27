@@ -1,0 +1,33 @@
+
+> playground@0.1.0 build
+> next build
+
+warn  - You have enabled experimental feature (transpilePackages) in next.config.js.
+warn  - Experimental features are not covered by semver, and may cause unexpected or broken application behavior. Use at your own risk.
+
+info  - Linting and checking validity of types...
+
+./pages/index.tsx
+165:6  Warning: React Hook useEffect has missing dependencies: 'cube' and 'moves'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+info  - Creating an optimized production build...
+info  - Compiled successfully
+info  - Collecting page data...
+info  - Generating static pages (0/3)
+info  - Generating static pages (3/3)
+info  - Finalizing page optimization...
+
+Route (pages)                              Size     First Load JS
+┌ ○ /                                      6.28 kB        78.5 kB
+├   /_app                                  0 B            72.2 kB
+└ ○ /404                                   181 B          72.4 kB
++ First Load JS shared by all              74.5 kB
+  ├ chunks/framework-aedff47d294e0670.js   45.4 kB
+  ├ chunks/main-1410642799689f9b.js        25.7 kB
+  ├ chunks/pages/_app-4ea60c2864628cb9.js  333 B
+  ├ chunks/webpack-8fa1640cc84ba8fe.js     750 B
+  └ css/65f14770512a1acf.css               2.28 kB
+
+○  (Static)  automatically rendered as static HTML (uses no initial props)
+

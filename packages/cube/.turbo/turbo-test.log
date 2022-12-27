@@ -5,12 +5,12 @@
 c
  DEV  v0.24.5 /home/novahaus-dev/projects/wall-c-solver/rubik-cube-solver/packages/cube
 
- ✓ tests/Cube.test.ts  (16 tests) 21ms
+ ✓ tests/Cube.test.ts  (16 tests) 36ms
 
 Test Files  1 passed (1)
      Tests  16 passed (16)
-  Start at  01:29:45
-  Duration  1.32s (transform 540ms, setup 0ms, collect 99ms, tests 21ms)
+  Start at  01:46:55
+  Duration  1.21s (transform 528ms, setup 0ms, collect 88ms, tests 36ms)
 
 
  PASS  Waiting for file changes...

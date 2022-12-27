@@ -63,7 +63,7 @@ const Face: FC<{ face: number[]; faceIndex: number }> = ({
   faceIndex,
 }): JSX.Element => {
   return (
-    <div className={`grid grid-cols-3 ${FACES_TO_ROTATE?.[faceIndex]}`}>
+    <div className={`grid grid-cols-3 ${(FACES_TO_ROTATE as any)?.[faceIndex]}`}>
       {face.map((position, positionIndex) => (
         <Position key={positionIndex} position={position} />
       ))}

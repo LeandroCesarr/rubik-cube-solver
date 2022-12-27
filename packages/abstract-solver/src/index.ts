@@ -174,7 +174,7 @@ export abstract class ASolver {
         .map(([key, value]) => ([value, key]))
     )
 
-    return Number.parseInt(FOREHEADS_MAP[value] || FOREHEADS_MAP_INVERSE[value]);
+    return Number.parseInt((FOREHEADS_MAP as any)[value] || FOREHEADS_MAP_INVERSE[value]);
   }
 
   protected getOriginalPositionCoordinatesByValue(positionValue: number): [number, number] {
@@ -238,7 +238,7 @@ export abstract class ASolver {
       }
 
       return acc;
-    }, [])
+    }, [] as number[])
   }
 
   protected getCornersByFace(face: number): [number, number, number, number] {
@@ -260,7 +260,7 @@ export abstract class ASolver {
         .values(map)
         .map((values) => values.join())
         .includes(coordinates.join())
-    );
+    ) as ICornerMap;
   }
 
   protected getTargetCornerPosition(position: number) {
@@ -271,7 +271,7 @@ export abstract class ASolver {
       8: 2
     };
 
-    return map[position];
+    return (map as any)[position];
   }
 
   protected getMiddleForeheads(): [number, number, number, number] {

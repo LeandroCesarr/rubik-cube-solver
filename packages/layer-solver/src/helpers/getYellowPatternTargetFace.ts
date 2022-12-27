@@ -2,7 +2,7 @@ import { YELLOW_FACE_PATTERNS } from "../modules/constants";
 import { getFaceByPosition } from "./getFaceByPosition";
 
 function getPatternFace(faceMap: number[], map: any): { positions: number[], face: number } {
-  return map.find((map) => {
+  return map.find((map: any) => {
     return faceMap.every((position, index) => {
       const currentFace = getFaceByPosition(position);
 
