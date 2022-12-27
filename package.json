@@ -1,38 +1,28 @@
 {
-  "name": "rubik-cube-solver",
-  "version": "0.1.0",
+  "name": "wall-c-solver",
+  "version": "0.0.0",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev $npm_package_config_nextpath",
-    "build": "next build $npm_package_config_nextpath",
-    "start": "next start $npm_package_config_nextpath",
-    "lint": "next lint $npm_package_config_nextpath",
-    "test": "vitest",
-    "test:bench": "vitest bench",
-    "test:ui": "vitest --ui",
-    "coverage": "vitest run --coverage"
-  },
-  "dependencies": {
-    "classnames": "^2.3.2",
-    "next": "12.3.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
-  },
-  "config": {
-    "nextpath": "src/web"
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "test": "turbo run test --parallel",
+    "test:bench": "turbo run test:bench --parallel",
+    "test:ui": "turbo run test:ui --parallel"
   },
   "devDependencies": {
-    "@types/node": "18.8.3",
-    "@types/react": "18.0.21",
-    "@types/react-dom": "18.0.6",
-    "@vitest/coverage-c8": "^0.24.3",
-    "@vitest/ui": "^0.24.2",
-    "autoprefixer": "^10.4.12",
-    "eslint": "8.25.0",
-    "eslint-config-next": "12.3.1",
-    "postcss": "^8.4.17",
-    "tailwindcss": "^3.1.8",
-    "typescript": "4.8.4",
-    "vitest": "^0.24.1"
-  }
+    "eslint-config-custom": "*",
+    "prettier": "latest",
+    "turbo": "latest"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {},
+  "packageManager": "npm@8.11.0"
 }

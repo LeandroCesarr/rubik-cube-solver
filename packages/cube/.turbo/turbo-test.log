@@ -1,0 +1,17 @@
+
+> test
+> vitest
+
+c
+ DEV  v0.24.5 /home/novahaus-dev/projects/wall-c-solver/rubik-cube-solver/packages/cube
+
+ ✓ tests/Cube.test.ts  (16 tests) 21ms
+
+Test Files  1 passed (1)
+     Tests  16 passed (16)
+  Start at  01:29:45
+  Duration  1.32s (transform 540ms, setup 0ms, collect 99ms, tests 21ms)
+
+
+ PASS  Waiting for file changes...
+       press h to show help, press q to quit

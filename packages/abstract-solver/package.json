@@ -1,0 +1,9 @@
+{
+  "name": "abstract-solver",
+  "main": "src/index.ts",
+  "files": ["src/**"],
+  "dependencies": {
+    "typescript": "latest",
+    "cube": "*"
+  }
+}

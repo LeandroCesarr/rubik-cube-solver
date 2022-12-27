@@ -1,4 +1,6 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Default",
   "compilerOptions": {
     "composite": false,
     "declaration": true,
@@ -14,6 +16,5 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }

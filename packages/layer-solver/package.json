@@ -1,0 +1,20 @@
+{
+  "name": "layer-solver",
+  "main": "src/index.ts",
+  "files": ["src/**"],
+  "dependencies": {
+    "typescript": "latest",
+    "abstract-solver": "*",
+    "cube": "*"
+  },
+  "devDependencies": {
+    "@vitest/coverage-c8": "^0.24.3",
+    "@vitest/ui": "^0.24.2",
+    "vitest": "^0.24.1"
+  },
+  "scripts": {
+    "test": "vitest",
+    "test:bench": "vitest bench",
+    "test:ui": "vitest --ui"
+  }
+}
